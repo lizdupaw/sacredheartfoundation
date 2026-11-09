@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sacred Heart Foundation Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Desktop = Figma "SHF - Homepage" 1920px frame, measured 1:1 in px.
+   At 1200px and wider the whole page is scaled with CSS zoom (window width / 1920),
+   so every section keeps Figma's proportions on any screen. Below 1200px a fluid layout takes over. */
+:root{
+  --navy:#192751; --royal:#29439c; --royal-2:#1d4499; --ink-navy:#1d284d;
+  --magenta:#bd2196; --teal:#029598;
+  --forest:#223838; --forest-2:#1e3d3d; --oxblood:#47151d;
+  --cream:#f6f0e6; --cream-2:#f5ede3; --sky:#c4e1f6; --muted:#73788c; --white:#fff;
+  --display:"Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --body:"DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --side:77px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--white);color:var(--royal);font-family:var(--body);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--display);font-weight:500;margin:0}
+p{margin:0}
+:focus-visible{outline:3px solid var(--magenta);outline-offset:3px;border-radius:6px}
+
+.eyebrow{display:block;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--magenta);line-height:1.25}
+.bar{display:block;width:27px;height:4px;background:var(--oxblood)}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;height:59px;padding:0 36px;font-weight:500;font-size:18px;line-height:1.25;text-decoration:none;transition:transform .2s ease, background-color .2s ease, box-shadow .2s ease;white-space:nowrap}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(25,39,81,.18)}
+.btn-magenta{background:var(--magenta);color:var(--white)}
+.btn-magenta:hover{background:#a51a83}
+.btn-white{background:var(--white);color:var(--magenta)}
+.btn-teal{background:var(--teal);color:var(--white)}
+.btn-teal:hover{background:#027f82}
+.link{color:var(--magenta);text-decoration:none;font-size:18px;line-height:1.25;background:none;border:0;padding:0;text-align:left}
+.link:hover{text-decoration:underline;text-underline-offset:4px}
+.mark{display:block;margin-inline:auto}
+
+/* ---------- Nav (Figma: logo 170x48 at 128,38 · links 17px from x950, 36px gaps, right edge 1800) ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background-color .3s ease, box-shadow .3s ease}
+.nav .inner{display:flex;align-items:flex-start;justify-content:space-between;padding:38px 120px 0 128px;transition:padding .3s ease}
+.nav.solid{background:var(--navy);box-shadow:0 4px 20px rgba(0,0,0,.18)}
+.nav.solid .inner{padding-top:14px;padding-bottom:14px}
+.logo img{width:170px;height:36px;margin-top:7px}
+.nav ul{list-style:none;margin:-2px 0 0;padding:0;display:flex;gap:36px}
+.nav a.navlink{color:var(--cream);text-decoration:none;font-weight:500;font-size:17px;line-height:22px;position:relative;display:block}
+.nav a.navlink::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--magenta);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.nav a.navlink:hover::after,.nav a.navlink.active::after{transform:scaleX(1)}
+.menu-btn{display:none;background:none;border:0;color:var(--cream);padding:8px}
+.menu-btn svg{width:28px;height:28px}
+
+/* ---------- Hero (934 tall · headline at 940,224 · body 22px · button 59 tall · dots at y843) ---------- */
+.hero{position:relative;height:784px;color:var(--white);overflow:hidden;background:var(--navy)}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0 0 auto;height:640px;background:linear-gradient(180deg,var(--navy) 0%,rgba(25,39,81,0) 33.9%);pointer-events:none}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(25,39,81,0) 40%,rgba(25,39,81,.3) 100%);pointer-events:none}
+.hero-copy{position:absolute;z-index:2;left:940px;top:136px;width:804px}
+.hero-tag{color:var(--white);font-size:16px;letter-spacing:.1em;margin-bottom:20px}
+/* 88px (Figma uses 112) so the longest headline (Oncology) fits in 3 lines at one size across all slides */
+.hero-copy h1{font-size:88px;line-height:.98;margin-bottom:28px;text-wrap:balance}
+.hero-copy p{font-size:22px;line-height:1.45;max-width:732px;margin-bottom:30px}
+.hero-copy .slide-text{transition:opacity .5s ease}
+.hero-copy.fading .slide-text{opacity:0}
+.dots{position:absolute;z-index:3;left:50%;transform:translateX(-50%);top:731px;display:flex;gap:10px}
+.dots button{width:17px;height:17px;border-radius:50%;border:1px solid var(--white);background:transparent;padding:0}
+.dots button[aria-current="true"]{background:var(--white)}
+
+/* ---------- Trust bar (280 tall · tiles 423x152 · 25px gaps) ---------- */
+.stats{background:var(--cream-2);height:280px;padding:64px var(--side) 0}
+.stats .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:25px}
+.stat{border-radius:16px;color:var(--white);text-align:center;height:152px;padding-top:28px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.stat strong{font-size:40px;line-height:1.05;font-weight:700;font-variant-numeric:tabular-nums}
+.stat span{font-size:17px;line-height:1.35;max-width:280px;text-wrap:balance}
+.s1{background:var(--magenta)}.s2{background:var(--royal)}.s3{background:var(--navy)}.s4{background:var(--teal)}
+.stat.pop{animation:pop .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{0%{transform:translateY(10px)}100%{transform:none}}
+
+/* ---------- Make a Difference (1390 tall) ---------- */
+#giving{padding:70px var(--side) 151px}
+.head{text-align:center}
+#giving .head .eyebrow{font-size:16px;letter-spacing:.08em;margin-top:46px}
+#giving h2{font-size:72px;line-height:1;color:var(--royal);width:952px;margin:-5px auto 0}
+.diff{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 32px;margin-top:88px}
+.dcard{display:grid;grid-template-columns:378fr 110fr 379fr;min-height:417px}
+.dcard .ph{grid-column:1/3;grid-row:1;border-radius:24px 0 0 24px;overflow:hidden;position:relative}
+.dcard .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.dcard:hover .ph img{transform:scale(1.04)}
+.dcard .txt{grid-column:2/4;grid-row:1;background:var(--cream);border-radius:24px;padding:56px 40px 48px;display:flex;flex-direction:column;position:relative;z-index:1}
+.dcard .eyebrow{margin-top:5px}
+.dcard h3{font-size:36px;line-height:1.08;color:var(--royal);margin-top:14px}
+.dcard p{font-size:16px;line-height:1.5;margin-top:8px}
+.dcard .links{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:auto;padding-top:20px;white-space:nowrap}
+
+/* ---------- Share Your Story (813 tall · photo 606 at x187 · text at x923) ---------- */
+.share{background:var(--forest);color:var(--white);height:813px;padding:82px 0 0 187px}
+.share .inner{display:grid;grid-template-columns:606px 730px;column-gap:130px}
+.leaf-photo{width:606px;height:606px;border-radius:380px 0 380px 0;overflow:hidden}
+.leaf-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+.share .copy{padding-top:116px}
+.share h2{font-size:110px;line-height:.92;letter-spacing:-1.1px;position:relative;display:inline-block;margin-bottom:28px;isolation:isolate;white-space:nowrap}
+.share h2 .petal{position:absolute;left:545px;top:-12px;width:110px;height:auto;transform:scaleX(-1) rotate(45deg);z-index:-1}
+.share p{font-size:20px;line-height:1.5}
+.share p.one{width:729px;margin-bottom:28px}
+.share p.two{width:676px;margin-bottom:28px}
+
+/* ---------- About (814 tall · copy at x187 · kid photo 1147x765 bottom-aligned at x646) ---------- */
+.about{background:var(--cream);position:relative;overflow:hidden;height:814px}
+.about .copy{position:absolute;left:187px;top:138px;width:582px;z-index:2}
+.about .eyebrow{margin-top:5px}
+.about h2{font-size:56px;line-height:1.1;color:var(--royal-2);margin-top:24px}
+.about .copy p{font-size:18px;line-height:1.5;color:var(--royal-2);margin-top:24px}
+.about .copy p+p{margin-top:27px}
+.about .copy .btn{margin-top:103px}
+.about .flower{position:absolute;left:891px;top:-29px;width:707px;height:739px;transform:rotate(-60deg);pointer-events:none}
+.about .kid{position:absolute;left:646px;bottom:0;width:1147px;height:765px;object-fit:cover;max-width:none}
+
+/* ---------- Our Stories (1848 tall · cards 558x592) ---------- */
+#stories{padding:118px var(--side) 115px}
+#stories .eyebrow{margin-top:45px}
+#stories h2{font-size:56px;line-height:1.1;color:var(--royal);margin-top:5px}
+.stories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:53px 46px;margin-top:60px}
+.story{display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:var(--cream);text-align:left;border:0;padding:0;color:var(--royal);transition:transform .25s ease, box-shadow .25s ease}
+.story:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(25,39,81,.14)}
+.story .ph{aspect-ratio:558/386;flex:none;overflow:hidden}
+.story .ph img{width:100%;height:100%;object-fit:cover}
+.story .body{position:relative;padding:27px 29px 40px;display:flex;flex-direction:column;gap:27px}
+.story .tab{position:absolute;left:0;top:-48px;height:49px;width:52%;background:var(--cream);border-top-right-radius:24px;padding:28px 0 0 29px;font-weight:500;font-size:16px;line-height:1.25;color:var(--magenta)}
+.story .tab::after{content:"";position:absolute;right:-24px;bottom:1px;width:24px;height:24px;background:radial-gradient(circle at 100% 0, transparent 23.5px, var(--cream) 24px)}
+.story h3{font-size:32px;line-height:1.1}
+.story p{font-size:17px;line-height:1.45}
+.stories-cta{display:flex;justify-content:center;margin-top:115px}
+
+/* ---------- Donor Voices (727 tall · cards 558x355) ---------- */
+.voices{background:var(--forest-2);color:var(--white);padding:73px var(--side) 96px}
+.voices .mark{width:29px;height:24px}
+.voices .eyebrow{color:var(--white);margin-top:44px}
+.voices h2{font-size:56px;line-height:1.1;margin-top:2px}
+.quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:46px;margin-top:53px}
+.quote{background:var(--white);border-radius:27px;min-height:355px;padding:51px 42px 44px;justify-content:space-between;text-align:center;display:flex;flex-direction:column;gap:29px;margin:0}
+.quote blockquote{margin:0;font-weight:500;font-size:32px;line-height:1.25;color:var(--navy)}
+.quote figcaption{font-weight:700;font-size:18px;line-height:1.25;color:var(--teal)}
+
+/* ---------- Stay Connected (346 tall · form at x1085) ---------- */
+.connect{background:var(--royal);color:var(--white);height:346px;padding:91px 189px 0 185px;display:flex;justify-content:space-between}
+.connect .bar{background:var(--navy)}
+.connect .eyebrow{color:var(--sky);margin-top:7px}
+.connect h2{font-size:48px;line-height:1.1;margin-top:10px;width:808px}
+.connect p{font-size:18px;width:532px;margin-top:16px}
+.signup{display:grid;grid-template-columns:repeat(3,207px);gap:10px 12px;align-content:start;margin-top:24px}
+.signup input{width:100%;height:52px;border-radius:999px;border:2px solid transparent;padding:0 22px;font:inherit;font-size:16px;color:var(--navy);background:var(--white);text-align:center}
+.signup input::placeholder{color:var(--muted)}
+.signup input:focus{outline:none;border-color:var(--magenta)}
+.signup input[aria-invalid="true"]{border-color:#ff9db5}
+.signup .row{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.signup .msg{font-size:15px;color:var(--sky)}
+.signup .btn{height:55px;width:150px;padding:0}
+
+/* ---------- Footer (424 tall + 57 legal bar) ---------- */
+.foot{background:var(--ink-navy);color:var(--white);height:424px;padding:109px 0 0 196px;display:grid;grid-template-columns:358px 326px auto;column-gap:81px}
+.foot .flogo{width:358px;height:75px}
+.foot .tag p{font-size:17px;line-height:1.45}
+.foot .tag .acts{display:flex;align-items:center;gap:49px;margin-top:29px}
+.foot .tag .btn{height:48px;padding:0 28px;font-size:16px}
+.foot .social a{display:block;width:103px;height:18px;background:url(assets/4dad3.svg) no-repeat center/contain}
+.foot .cols{display:flex;gap:60px;margin-left:43px}
+.foot .cols nav:nth-child(1){width:181px}.foot .cols nav:nth-child(2){width:136px}.foot .cols nav:nth-child(3){width:132px}
+.foot h4{margin:0 0 12px;font-size:15px;line-height:1.25;letter-spacing:.06em;text-transform:uppercase;font-weight:700;position:relative;padding-top:10px;white-space:nowrap}
+.foot h4::before{content:"";position:absolute;top:0;left:0;width:27px;height:4px;background:var(--magenta)}
+.foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.foot li{line-height:20px}
+.foot ul a{color:var(--sky);text-decoration:none;font-size:16px;line-height:1.25;white-space:nowrap}
+.foot ul a:hover{color:var(--white);text-decoration:underline;text-underline-offset:3px}
+.legal{background:var(--royal);color:var(--white);text-align:center;font-size:17px;height:57px;line-height:57px}
+.legal a{text-decoration:none}.legal a:hover{text-decoration:underline}
+
+/* ---------- Modal + toast ---------- */
+dialog{border:0;border-radius:24px;padding:0;max-width:min(680px,calc(100vw - 32px));width:100%;color:var(--royal);background:var(--cream);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(25,39,81,.6);backdrop-filter:blur(3px)}
+dialog .dimg{aspect-ratio:16/8;overflow:hidden}
+dialog .dimg img{width:100%;height:100%;object-fit:cover}
+dialog .dbody{padding:32px 36px 36px;display:flex;flex-direction:column;gap:14px}
+dialog h3{font-size:40px;line-height:1.05}
+dialog .x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:0;background:var(--white);color:var(--navy);font-size:22px;line-height:1;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+dialog .btn{justify-self:start}
+.form{display:grid;gap:14px}
+.form label{display:grid;gap:6px;font-size:14px;font-weight:500;color:var(--navy)}
+.form input,.form select,.form textarea{font:inherit;font-size:16px;padding:12px 16px;border-radius:14px;border:1.5px solid #d9cfbf;background:var(--white);color:var(--navy)}
+.form textarea{min-height:120px;resize:vertical}
+.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--magenta)}
+.form .err{color:#b0124f;font-size:14px;min-height:1.2em}
+.form .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--navy);color:var(--white);padding:14px 22px;border-radius:999px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:100;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.proto{position:fixed;right:14px;bottom:14px;z-index:90;background:var(--white);color:var(--navy);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+
+
+/* ---------- Desktop frame: the 1920 design sits centered on a wider canvas; backgrounds stay full-bleed ---------- */
+@media (min-width:1200px){
+  :root{--gx:max(0px, calc((100vw / var(--z, 1) - 1920px) / 2))}
+  .nav .inner{max-width:1920px;margin-inline:auto}
+  .stats{padding-inline:calc(var(--gx) + 77px)}
+  #giving{padding-inline:calc(var(--gx) + 77px)}
+  .share{padding-left:calc(var(--gx) + 187px)}
+  .about .copy{left:calc(var(--gx) + 187px)}
+  .about .flower{left:calc(var(--gx) + 891px)}
+  .about .kid{left:calc(var(--gx) + 646px)}
+  #stories{padding-inline:calc(var(--gx) + 77px)}
+  .voices{padding-inline:calc(var(--gx) + 77px)}
+  .connect{padding-left:calc(var(--gx) + 185px);padding-right:calc(var(--gx) + 189px)}
+  .foot{padding-left:calc(var(--gx) + 196px)}
+  .hero-copy{left:calc(var(--gx) + 940px)}
+}
+/* =====================================================================
+   Under 1200px: fluid layout (no zoom). Sections stack; type steps down.
+   ===================================================================== */
+@media (max-width:1199px){
+  body{font-size:16px}
+  .nav .inner{padding:20px max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));align-items:center}
+  .nav.solid .inner{padding-top:12px;padding-bottom:12px}
+  .logo img{width:140px;height:auto}
+  .menu-btn{display:block;position:relative;z-index:2}
+  .nav ul{position:fixed;inset:0 0 0 auto;width:min(340px,86vw);flex-direction:column;gap:6px;margin:0;background:var(--navy);padding:90px 32px 32px;transform:translateX(100%);transition:transform .3s ease;box-shadow:-10px 0 40px rgba(0,0,0,.3)}
+  .nav.open ul{transform:none}
+  .nav a.navlink{font-size:20px;padding-block:10px}
+
+  .hero{height:auto;min-height:600px}
+  .hero::after{height:60%}
+  .hero-shade{background:linear-gradient(0deg,rgba(25,39,81,.85) 0%,rgba(25,39,81,.2) 65%)}
+  .hero-copy{position:relative;left:auto;top:auto;width:auto;max-width:640px;padding:170px 20px 110px}
+  .hero-copy h1{font-size:clamp(40px,7vw,64px);margin-bottom:20px}
+  .hero-copy p{font-size:18px;margin-bottom:28px}
+  .dots{top:auto;bottom:48px}
+
+  .stats{height:auto;padding:40px 20px}
+  .stats .grid{grid-template-columns:repeat(2,1fr);gap:16px}
+  .stat{height:auto;padding:24px 16px}
+  .stat strong{font-size:34px}
+
+  #giving{padding:56px 20px 72px}
+  #giving .eyebrow{margin-top:28px}
+  #giving h2{width:auto;font-size:clamp(36px,6vw,56px);text-wrap:balance}
+  .diff{grid-template-columns:1fr;margin-top:40px;gap:20px}
+  .dcard{grid-template-columns:38fr 10fr 52fr;height:auto;min-height:380px}
+  .dcard .txt{padding:40px 28px 36px}
+  .dcard .links{padding-top:20px}
+
+  .share{height:auto;padding:56px 20px 64px}
+  .share .inner{grid-template-columns:1fr;row-gap:36px;max-width:640px;margin-inline:auto}
+  .leaf-photo{width:100%;max-width:420px;height:auto;aspect-ratio:1;border-radius:62.7% 0 62.7% 0 / 62.7% 0 62.7% 0}
+  .share .copy{padding-top:0}
+  .share h2{font-size:clamp(48px,10vw,80px);white-space:normal}
+  .share h2 .petal{display:none}
+  .share p.one,.share p.two{width:auto;font-size:18px}
+
+  .about{height:auto;display:flex;flex-direction:column}
+  .about .copy{position:static;width:auto;max-width:640px;padding:56px 20px 0}
+  .about h2{font-size:clamp(36px,6vw,48px)}
+  .about .copy .btn{margin-top:32px}
+  .about .art{position:relative;margin-top:24px;aspect-ratio:1147/765;max-width:100%}
+  .about .flower{left:22%;top:-10%;width:60%;height:auto}
+  .about .kid{position:absolute;left:0;bottom:0;width:100%;height:100%}
+
+  #stories{padding:64px 20px 72px}
+  #stories .eyebrow{margin-top:28px}
+  #stories h2{font-size:clamp(34px,5.5vw,48px)}
+  .stories{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:36px}
+  .story{height:auto}
+  .story .ph{height:auto;aspect-ratio:558/386}
+  .story .body{padding-bottom:30px;gap:14px}
+  .story .tab{width:52%}
+  .story p{width:auto}
+  .stories-cta{margin-top:48px}
+
+  .voices{height:auto;padding:56px 20px 64px}
+  .voices h2{font-size:clamp(34px,5.5vw,48px);text-wrap:balance}
+  .quotes{grid-template-columns:1fr;gap:20px;max-width:640px;margin-inline:auto;margin-top:36px}
+  .quote{height:auto;padding:40px 32px}
+  .quote blockquote{height:auto;font-size:24px}
+
+  .connect{height:auto;padding:56px 20px 64px;flex-direction:column;gap:28px}
+  .connect h2{width:auto;font-size:clamp(32px,5vw,44px)}
+  .connect p{width:auto}
+  .signup{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0}
+
+  .foot{height:auto;padding:56px 20px;grid-template-columns:1fr;row-gap:36px}
+  .foot .flogo{width:280px;height:auto}
+  .foot .cols{margin-left:0;flex-wrap:wrap;gap:32px 48px}
+  .foot .cols nav{width:auto!important}
+  .legal{height:auto;line-height:1.45;padding:16px 20px calc(16px + env(safe-area-inset-bottom,0px));font-size:15px}
+}
+@media (max-width:640px){
+  .stats .grid{grid-template-columns:1fr}
+  .dcard{grid-template-columns:1fr;min-height:0}
+  .dcard .ph{grid-column:1;grid-row:1;border-radius:24px 24px 0 0;aspect-ratio:4/3;position:relative}
+  .dcard .txt{grid-column:1;grid-row:2;border-radius:0 0 24px 24px}
+  .stories{grid-template-columns:1fr}
+  .signup{grid-template-columns:1fr}
+  .signup .row{flex-direction:column-reverse;align-items:stretch}
+  .signup .btn{width:100%}
+  .form .two{grid-template-columns:1fr}
+}
+
+.connect > .wrap,.foot > .wrap{display:contents}
+</style>
+<script>
+/* Scale the page to the window (1200px and up): the 1920px Figma design sits centered on a 2240px canvas, leaving side margins. */
+(function(){var d=document.documentElement;function z(){var w=window.innerWidth;var z=w>=1200?(w/2240):1;d.style.zoom=w>=1200?z:'';d.style.setProperty('--z',z);}z();addEventListener('resize',z);})();
+</script>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="inner">
+    <a class="logo" href="#top" aria-label="Sacred Heart Foundation home"><img src="assets/nav-logo.svg" alt="Sacred Heart Foundation"></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="navlist">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul id="navlist">
+      <!-- Each item is its own page. Pages not built yet are marked .stub and show a notice. -->
+      <li><a class="navlink active" href="index.html" aria-current="page">Home</a></li>
+      <li><a class="navlink stub" href="about.html" data-page="About">About</a></li>
+      <li><a class="navlink stub" href="impact.html" data-page="Impact">Impact</a></li>
+      <li><a class="navlink stub" href="giving.html" data-page="Giving">Giving</a></li>
+      <li><a class="navlink stub" href="cancer-center.html" data-page="Cancer Center">Cancer Center</a></li>
+      <li><a class="navlink stub" href="hospitals.html" data-page="Hospitals">Hospitals</a></li>
+      <li><a class="navlink stub" href="share-your-story.html" data-page="Share Your Story">Share Your Story</a></li>
+      <li><a class="navlink stub" href="contact.html" data-page="Contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top">
+  <!-- Hero -->
+  <section class="hero" aria-roledescription="carousel" aria-label="Featured">
+    <div class="slide on"><img src="assets/6fd4f.jpg" alt="A smiling older woman with glasses" style="object-position:30% 30%"></div>
+    <div class="slide"><img src="assets/8e6c4.jpg" alt="A newborn resting in a hospital bassinet"></div>
+    <div class="slide"><img src="assets/02070.jpg" alt="A caregiver sharing a laugh with an older woman" style="object-position:30% 35%"></div>
+    <div class="hero-shade"></div>
+    <div class="hero-copy" id="heroCopy">
+      <div class="slide-text">
+        <span class="eyebrow hero-tag" id="heroTag">Cardiac</span>
+        <h1 id="heroTitle">Your hardest days deserve our best.</h1>
+        <p id="heroBody">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+      <button class="btn btn-white" id="heroStory">Read the Story</button>
+    </div>
+    <div class="dots" role="tablist" aria-label="Choose slide">
+      <button role="tab" aria-label="Slide 1" aria-current="true"></button>
+      <button role="tab" aria-label="Slide 2" aria-current="false"></button>
+      <button role="tab" aria-label="Slide 3" aria-current="false"></button>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats" id="impact" aria-label="Our impact">
+    <div class="grid">
+      <div class="stat s1"><strong data-prefix="Nearly " data-count="100">Nearly 100</strong><span>patients turn to Sacred Heart every hour in their time of need</span></div>
+      <div class="stat s2"><strong data-count="20" data-suffix="+">20+</strong><span>counties served across Northwest Florida</span></div>
+      <div class="stat s3"><strong data-count="100" data-suffix="%">100%</strong><span>of your donation stays here</span></div>
+      <div class="stat s4"><strong data-count="111" data-suffix=" Years">111 Years</strong><span>serving our community, since 1915</span></div>
+    </div>
+  </section>
+
+  <!-- Make a difference -->
+  <section id="giving">
+    <div class="wrap">
+      <div class="head">
+        <img class="mark" src="assets/ce6eb.svg" alt="">
+        <span class="eyebrow">Make a Difference</span>
+        <h2>A community that shows up when it matters most.</h2>
+      </div>
+      <div class="diff">
+        <article class="dcard">
+          <div class="ph"><img src="assets/bd13e.jpg" alt="A smiling woman with braids" style="object-position:30% 50%"></div>
+          <div class="txt"><span class="bar"></span><span class="eyebrow">Give</span><h3>Your gift goes further here.</h3>
+            <p>Every gift helps provide compassionate care, advanced technology, lifesaving equipment, and programs that support patients and families throughout our community.</p>
+            <div class="links"><button class="link" data-donate="personal">Personal &amp; Family Giving »</button><button class="link" data-donate="corporate">Corporate Giving »</button></div></div>
+        </article>
+        <article class="dcard">
+          <div class="ph"><img src="assets/a56c4.jpg" alt="Guests gathered at a foundation event" style="object-position:50% 60%"></div>
+          <div class="txt"><span class="bar"></span><span class="eyebrow">Attend</span><h3>Come together. Leave a lasting impact.</h3>
+            <p>From signature events to community fundraisers, every gathering is an opportunity to come together, celebrate generosity, and support exceptional care close to home.</p>
+            <div class="links"><button class="link stub" data-page="Upcoming Events">Upcoming Events »</button></div></div>
+        </article>
+        <article class="dcard">
+          <div class="ph"><img src="assets/c61d1.jpg" alt="Colorful balloon arch at a fundraiser" style="object-position:50% 45%"></div>
+          <div class="txt"><span class="bar"></span><span class="eyebrow">Fundraise</span><h3>Start something that heals.</h3>
+            <p>Create a fundraiser your way. Celebrate a milestone, rally your workplace, host an event, or bring your community together to support the programs and services that matter most to you.</p>
+            <div class="links"><button class="link stub" data-page="Start a Fundraiser">Start a Fundraiser »</button></div></div>
+        </article>
+        <article class="dcard">
+          <div class="ph"><img src="assets/02070.jpg" alt="A volunteer sharing a laugh with an older woman" style="object-position:22% 50%"></div>
+          <div class="txt"><span class="bar"></span><span class="eyebrow">Volunteer</span><h3>Your time heals, too.</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <div class="links"><button class="link stub" data-page="Volunteer">Volunteer »</button></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Share your story -->
+  <section class="share" id="share">
+    <div class="inner">
+      <div class="leaf-photo"><img src="assets/a2649.jpg" alt="A smiling man in a knit beanie"></div>
+      <div class="copy">
+        <h2><span class="t">Share Your Story</span><img class="petal" src="assets/e1659.svg" alt=""></h2>
+        <p class="one">Your story has the power to inspire others. Whether you’re a patient, family member, donor, volunteer, or community supporter, we’d be honored to hear how Sacred Heart has made an impact in your life.</p>
+        <p class="two">By sharing your experience, you can help others see the difference compassionate care and a generous community can make.</p>
+        <button class="btn btn-magenta" id="openShare">Share Your Story</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="wrap">
+      <div class="copy">
+        <span class="bar"></span>
+        <span class="eyebrow">About the Foundation</span>
+        <h2>Rooted in Compassion. Driven by Community.</h2>
+        <p>Since 1984, Sacred Heart Foundation has connected the generosity of our community with the needs of the patients and families we serve. Through philanthropy, we help advance patient care, fund innovative technology and lifesaving equipment, support education and programs, and strengthen the future of healthcare across our region.</p>
+        <p>Together, we’re carrying forward a legacy of compassionate giving and helping make exceptional care possible right here at home.</p>
+        <button class="btn btn-magenta stub" data-page="About the Foundation">Learn More</button>
+      </div>
+      <div class="art">
+        <img class="flower" src="assets/13908.svg" alt="">
+        <img class="kid" src="assets/e570b.png" alt="A smiling boy flexing his arm with a bandage after a shot">
+      </div>
+    </div>
+  </section>
+
+  <!-- Stories -->
+  <section id="stories">
+    <div class="wrap">
+      <div class="head small">
+        <img class="mark" src="assets/ce6eb.svg" alt="">
+        <span class="eyebrow">Our Stories</span>
+        <h2>A number to most. A name to us.</h2>
+      </div>
+      <div class="stories" id="storyGrid"></div>
+      <div class="stories-cta"><button class="btn btn-magenta stub" data-page="All Stories">See All Stories</button></div>
+    </div>
+  </section>
+
+  <!-- Donor voices -->
+  <section class="voices">
+    <div class="wrap">
+      <div class="head">
+        <img class="mark" src="assets/9ac8e.svg" alt="">
+        <span class="eyebrow">Donor Voices</span>
+        <h2>The most human thing you can do is give.</h2>
+      </div>
+      <div class="quotes">
+        <figure class="quote"><blockquote>“I didn’t expect to feel this supported. The team treated my family like we mattered, and that made the hardest year a little easier.”</blockquote><figcaption>Jack Placeholder, donor</figcaption></figure>
+        <figure class="quote"><blockquote>“Giving back felt small until I saw what it actually funds. Knowing my gift helped someone get through treatment means everything to me.”</blockquote><figcaption>Jill Placeholder, donor</figcaption></figure>
+        <figure class="quote"><blockquote>“We started a fundraiser at our office, and it turned into something bigger than any of us planned. Every dollar went straight to care.”</blockquote><figcaption>Jo Placeholder, donor</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stay connected -->
+  <section class="connect">
+    <div class="wrap">
+      <div>
+        <span class="bar"></span>
+        <span class="eyebrow">Stay Connected</span>
+        <h2>Stories of care, delivered to your inbox.</h2>
+        <p>Get patient stories, event invitations, and updates on the impact your generosity makes across our community.</p>
+      </div>
+      <form class="signup" id="signup" novalidate>
+        <input id="fn" name="fn" placeholder="First Name" aria-label="First name" autocomplete="given-name">
+        <input id="ln" name="ln" placeholder="Last Name" aria-label="Last name" autocomplete="family-name">
+        <input id="em" name="em" type="email" placeholder="Email Address" aria-label="Email address" autocomplete="email">
+        <div class="row"><span class="msg" id="signupMsg" role="status"></span><button class="btn btn-teal" type="submit">Subscribe</button></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="foot">
+    <div class="wrap">
+      <img class="flogo" src="assets/96e65.svg" alt="Sacred Heart Foundation">
+      <div class="tag">
+        <p>Supporting Sacred Heart hospitals since 1984. Every gift stays local, funding care for neighbors who need it most.</p>
+        <div class="acts"><button class="btn btn-magenta stub" data-page="Contact Us">Contact Us</button><span class="social"><a href="#" class="stub" data-page="Social channels" aria-label="Social media links"></a></span></div>
+      </div>
+      <div class="cols">
+        <nav><h4>Give</h4><ul><li><a href="#" class="stub" data-page="Personal &amp; Family Giving">Personal &amp; Family Giving</a></li><li><a href="#" class="stub" data-page="Corporate Giving">Corporate Giving</a></li><li><a href="#" class="stub" data-page="Planned Giving">Planned Giving</a></li><li><a href="#" class="stub" data-page="In-Kind Donations">In-Kind Donations</a></li><li><a href="#" class="stub" data-page="Shop for a Cause">Shop for a Cause</a></li></ul></nav>
+        <nav><h4>Learn</h4><ul><li><a href="#about">Who We Are</a></li><li><a href="#impact">Our Impact</a></li><li><a href="#" class="stub" data-page="Annual Reports">Annual Reports</a></li><li><a href="#stories">Patient Stories</a></li><li><a href="#" class="stub" data-page="Board of Directors">Board of Directors</a></li><li><a href="#" class="stub" data-page="Foundation Team">Foundation Team</a></li></ul></nav>
+        <nav><h4>Get Involved</h4><ul><li><a href="#" class="stub" data-page="Upcoming Events">Upcoming Events</a></li><li><a href="#" class="stub" data-page="Start a Fundraiser">Start a Fundraiser</a></li><li><a href="#" class="stub" data-page="Volunteer">Volunteer</a></li><li><a href="#" class="stub" data-page="Contact Us">Contact Us</a></li></ul></nav>
+      </div>
+    </div>
+  </div>
+  <div class="legal wrap">© 2026 Sacred Heart Foundation. All rights reserved. <a href="#" class="stub" data-page="Privacy Policy">Privacy Policy</a>. <a href="#" class="stub" data-page="Terms of Use">Terms of Use</a>.</div>
+</footer>
+
+<!-- Story modal -->
+<dialog id="storyDlg" aria-labelledby="storyTitle">
+  <button class="x" data-close aria-label="Close">×</button>
+  <div class="dimg"><img id="storyImg" src="" alt=""></div>
+  <div class="dbody">
+    <span class="eyebrow">Our Stories</span>
+    <h3 id="storyTitle"></h3>
+    <p id="storyText"></p>
+    <p style="font-size:14px;color:var(--muted)">Prototype: the full story page will live here.</p>
+  </div>
+</dialog>
+
+<!-- Share modal -->
+<dialog id="shareDlg" aria-labelledby="shareTitle">
+  <button class="x" data-close aria-label="Close">×</button>
+  <div class="dbody">
+    <span class="eyebrow">Share Your Story</span>
+    <h3 id="shareTitle">We’d be honored to hear it.</h3>
+    <form class="form" id="shareForm" novalidate>
+      <div class="two">
+        <label for="sName">Your name<input id="sName" required autocomplete="name"></label>
+        <label for="sEmail">Email<input id="sEmail" type="email" required autocomplete="email"></label>
+      </div>
+      <label for="sRole">I’m sharing as a…
+        <select id="sRole"><option>Patient</option><option>Family member</option><option>Donor</option><option>Volunteer</option><option>Community supporter</option></select>
+      </label>
+      <label for="sStory">Your story<textarea id="sStory" required placeholder="Tell us how Sacred Heart made a difference."></textarea></label>
+      <span class="err" id="shareErr" role="alert"></span>
+      <button class="btn btn-magenta" type="submit" style="justify-self:start">Submit Story</button>
+    </form>
+    <div id="shareDone" hidden>
+      <p style="font-size:18px">Thank you. Your story was received in this prototype. On the live site, our team would follow up by email.</p>
+      <button class="btn btn-magenta" data-close style="justify-self:start;margin-top:12px">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Donate modal -->
+<dialog id="donateDlg" aria-labelledby="donateTitle">
+  <button class="x" data-close aria-label="Close">×</button>
+  <div class="dbody">
+    <span class="eyebrow" id="donateKind">Personal &amp; Family Giving</span>
+    <h3 id="donateTitle">Your gift goes further here.</h3>
+    <form class="form" id="donateForm" novalidate>
+      <div style="display:flex;flex-wrap:wrap;gap:10px" id="amounts">
+        <button type="button" class="btn btn-white" data-amt="50" style="border:1.5px solid var(--magenta)">$50</button>
+        <button type="button" class="btn btn-white" data-amt="100" style="border:1.5px solid var(--magenta)">$100</button>
+        <button type="button" class="btn btn-white" data-amt="250" style="border:1.5px solid var(--magenta)">$250</button>
+        <button type="button" class="btn btn-white" data-amt="500" style="border:1.5px solid var(--magenta)">$500</button>
+      </div>
+      <label for="dOther">Other amount<input id="dOther" inputmode="decimal" placeholder="$"></label>
+      <span class="err" id="donateErr" role="alert"></span>
+      <button class="btn btn-magenta" type="submit" style="justify-self:start">Continue</button>
+    </form>
+    <p id="donateDone" hidden style="font-size:18px">Prototype stop: on the live site this continues to secure checkout.</p>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+<div class="proto">Prototype</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Toast
+  let tt; function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);}
+
+  // Nav
+  const nav=$('#nav'), menuBtn=$('#menuBtn');
+  const onScroll=()=>nav.classList.toggle('solid',scrollY>40||nav.classList.contains('open'));
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  menuBtn.addEventListener('click',()=>{const o=nav.classList.toggle('open');menuBtn.setAttribute('aria-expanded',o);onScroll();});
+  $$('.nav a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menuBtn.setAttribute('aria-expanded','false');}));
+
+  // Stub links
+  document.addEventListener('click',e=>{const s=e.target.closest('.stub');if(!s)return;e.preventDefault();toast((s.dataset.page||'This page')+' page is coming next in this prototype');});
+
+  // Hero carousel
+  // Hero copy from "SHF Content Doc" > COMPLETE Home > Storytelling Hero Banner
+  const slides=[
+    {tag:'Cardiac',t:'Your hardest days deserve our best.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'6fd4f.jpg',pos:'30% 30%',alt:'A smiling older woman with glasses'},
+    {tag:'Pediatric',t:'A first breath.<br>A second chance.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'8e6c4.jpg',pos:'50% 50%',alt:'A newborn resting in a hospital bassinet'},
+    {tag:'Oncology',t:'Early detection. Early intervention. More years together.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'02070.jpg',pos:'30% 35%',alt:'A caregiver sharing a laugh with an older woman'}
+  ];
+  const sEls=$$('.slide'), dots=$$('.dots button'), copy=$('#heroCopy'); let idx=0, timer;
+  function go(i){ if(i===idx)return; idx=i;
+    sEls.forEach((s,j)=>s.classList.toggle('on',j===i)); dots.forEach((d,j)=>d.setAttribute('aria-current',j===i));
+    copy.classList.add('fading'); setTimeout(()=>{$('#heroTag').textContent=slides[i].tag;$('#heroTitle').innerHTML=slides[i].t;$('#heroBody').textContent=slides[i].b;copy.classList.remove('fading');},reduce?0:450);
+  }
+  // Keep every slide's headline the same size and the text block the same height,
+  // so the body and button don't jump when the slide changes.
+  const textBox=copy.querySelector('.slide-text');
+  function lockHeroHeight(){
+    const probe=textBox.cloneNode(true);probe.style.cssText='position:absolute;visibility:hidden;left:0;right:0;min-height:0';
+    probe.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));copy.appendChild(probe);
+    let max=0;slides.forEach(s=>{probe.querySelector('.hero-tag').textContent=s.tag;probe.querySelector('h1').innerHTML=s.t;probe.querySelector('p').textContent=s.b;max=Math.max(max,probe.offsetHeight);});
+    probe.remove();textBox.style.minHeight=max+'px';
+  }
+  lockHeroHeight();addEventListener('resize',lockHeroHeight);
+  if(document.fonts)document.fonts.ready.then(lockHeroHeight);
+  function auto(){clearInterval(timer);if(!reduce)timer=setInterval(()=>go((idx+1)%slides.length),7000);}
+  dots.forEach((d,i)=>d.addEventListener('click',()=>{go(i);auto();})); auto();
+
+  // Trust bar counter: final values live in the markup; JS resets them to 0 and counts up
+  // (staggered, ease-out) the first time the bar scrolls into view.
+  const counters=$$('[data-count]');
+  const fmt=el=>v=>(el.dataset.prefix||'')+v.toLocaleString()+(el.dataset.suffix||'');
+  function countUp(el,delay){const n=+el.dataset.count,f=fmt(el),dur=2000;
+    setTimeout(()=>{const t0=performance.now();el.closest('.stat').classList.add('pop');
+      (function step(t){const k=Math.max(0,Math.min(1,(t-t0)/dur)),e=1-Math.pow(1-k,4);el.textContent=f(Math.round(n*e));if(k<1)requestAnimationFrame(step);})(t0);
+      setTimeout(()=>{el.textContent=f(n);},dur+80); // always land on the real number, even if frames are paused
+    },delay);}
+  if(!reduce&&'IntersectionObserver' in window){
+    counters.forEach(el=>el.textContent=fmt(el)(0));
+    const bar=$('#impact'); let started=false;
+    const start=()=>{if(started)return;started=true;io.disconnect();removeEventListener('scroll',check);counters.forEach((el,i)=>countUp(el,i*180));};
+    const check=()=>{const r=bar.getBoundingClientRect();if(r.top<innerHeight*.85&&r.bottom>0)start();};
+    const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting))start();},{threshold:.35});
+    io.observe(bar); addEventListener('scroll',check,{passive:true}); setTimeout(check,300);
+  }
+
+  // Stories
+  const stories=[
+    {img:'2e690.jpg',pos:'40% 50%',alt:'A nurse caring for a young boy in a hospital bed'},
+    {img:'6fd4f.jpg',pos:'50% 30%',alt:'A smiling older woman with glasses'},
+    {img:'b3c8d.jpg',pos:'50% 25%',alt:'A father and daughter laughing at the beach'},
+    {img:'05722.jpg',pos:'50% 25%',alt:'An older man in suspenders'},
+    {img:'331d5.jpg',pos:'50% 78%',alt:'A boy smiling in a hospital bed'},
+    {img:'5eb24.jpg',pos:'50% 30%',alt:'A woman standing with arms crossed'}
+  ];
+  const lorem='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+  $('#storyGrid').innerHTML=stories.map((s,i)=>`<button class="story" data-story="${i}">
+      <div class="ph"><img src="assets/${s.img}" alt="${s.alt}" style="object-position:${s.pos}" loading="lazy"></div>
+      <div class="body"><span class="tab">Read the Story »</span><h3>Story Headline Goes Here</h3><p>${lorem}</p></div></button>`).join('');
+
+  // Dialogs
+  const open=d=>{d.showModal();};
+  $$('dialog').forEach(d=>{d.addEventListener('click',e=>{if(e.target===d||e.target.closest('[data-close]'))d.close();});});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-story]');if(!b)return;const s=stories[+b.dataset.story];
+    $('#storyImg').src='assets/'+s.img;$('#storyImg').alt=s.alt;$('#storyImg').style.objectPosition=s.pos;
+    $('#storyTitle').textContent='Story Headline Goes Here';$('#storyText').textContent=lorem+' Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';open($('#storyDlg'));});
+
+  $('#heroStory').addEventListener('click',()=>{const s=slides[idx];
+    $('#storyImg').src='assets/'+s.img;$('#storyImg').alt=s.alt;$('#storyImg').style.objectPosition=s.pos;
+    $('#storyTitle').innerHTML=s.t.replace('<br>',' ');$('#storyText').textContent=s.b;open($('#storyDlg'));});
+
+  // Share form
+  $('#openShare').addEventListener('click',()=>{$('#shareForm').hidden=false;$('#shareDone').hidden=true;$('#shareErr').textContent='';open($('#shareDlg'));});
+  $('#shareForm').addEventListener('submit',e=>{e.preventDefault();
+    const n=$('#sName').value.trim(),m=$('#sEmail').value.trim(),st=$('#sStory').value.trim();
+    if(!n)return $('#shareErr').textContent='Add your name so we know who to thank.';
+    if(!/^\S+@\S+\.\S+$/.test(m))return $('#shareErr').textContent='Enter an email like name@example.com.';
+    if(st.length<20)return $('#shareErr').textContent='Tell us a little more: at least a sentence or two.';
+    e.target.hidden=true;$('#shareDone').hidden=false;e.target.reset();});
+
+  // Donate
+  let amt=null;
+  $$('[data-donate]').forEach(b=>b.addEventListener('click',()=>{$('#donateKind').textContent=b.dataset.donate==='corporate'?'Corporate Giving':'Personal & Family Giving';
+    $('#donateForm').hidden=false;$('#donateDone').hidden=true;$('#donateErr').textContent='';amt=null;$$('[data-amt]').forEach(x=>{x.style.background='';x.style.color='';});open($('#donateDlg'));}));
+  $$('[data-amt]').forEach(b=>b.addEventListener('click',()=>{amt=+b.dataset.amt;$('#dOther').value='';$$('[data-amt]').forEach(x=>{const on=x===b;x.style.background=on?'var(--magenta)':'';x.style.color=on?'#fff':'';});}));
+  $('#donateForm').addEventListener('submit',e=>{e.preventDefault();const o=parseFloat($('#dOther').value.replace(/[^0-9.]/g,''));const v=o>0?o:amt;
+    if(!v)return $('#donateErr').textContent='Choose an amount or enter your own.';e.target.hidden=true;$('#donateDone').hidden=false;
+    $('#donateDone').textContent=`Prototype stop: a $${v.toLocaleString()} gift would continue to secure checkout on the live site.`;});
+
+  // Newsletter
+  $('#signup').addEventListener('submit',e=>{e.preventDefault();const f=$('#fn'),l=$('#ln'),m=$('#em'),msg=$('#signupMsg');
+    [f,l,m].forEach(x=>x.removeAttribute('aria-invalid'));
+    if(!f.value.trim()){f.setAttribute('aria-invalid','true');f.focus();return msg.textContent='Add your first name.';}
+    if(!l.value.trim()){l.setAttribute('aria-invalid','true');l.focus();return msg.textContent='Add your last name.';}
+    if(!/^\S+@\S+\.\S+$/.test(m.value.trim())){m.setAttribute('aria-invalid','true');m.focus();return msg.textContent='Enter an email like name@example.com.';}
+    msg.textContent=`Thanks, ${f.value.trim()}. You’re on the list (prototype).`;e.target.reset();});
+})();
+</script>
+</body>
+</html>
