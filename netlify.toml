@@ -1,0 +1,4 @@
+# Netlify: publish the static site in /site. No build step needed (plain HTML/CSS/JS).
+[build]
+  publish = "site"
+  command = ""
