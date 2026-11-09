@@ -1,0 +1,72 @@
+/* v2 motion layer (inspired by farmafrica.org). Every effect rests on the finished state:
+   if this file or motion.js fails to load, the page looks exactly like v1.
+   "Reduce motion" visitors get no animation (see the global rule in index.html). */
+
+/* 1. Hero: slow zoom on the showing photo, headline rises in word by word */
+.slide img{transform-origin:60% 45%}
+.slide.on img{animation:kenburns 9s ease-out both}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.09)}}
+.hero-copy .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.hero-copy .w > span{display:inline-block;animation:rise .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 70ms + 150ms)}
+.hero-copy .hero-tag.anim,.hero-copy #heroBody.anim,.hero-copy #heroStory.anim{animation:fadeup .8s cubic-bezier(.2,.8,.2,1) both}
+.hero-copy #heroBody.anim{animation-delay:.45s}
+.hero-copy #heroStory.anim{animation-delay:.6s}
+@keyframes rise{from{transform:translateY(105%)}to{transform:none}}
+@keyframes fadeup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* 2. Petal motif: pink petal turns with scroll; About flower draws itself in, then drifts */
+.share h2 .petal{transform:scaleX(-1) rotate(calc(45deg + var(--petal-spin, 0deg))) scale(var(--petal-scale, 1));transition:transform .2s linear}
+.about .flower-svg{position:absolute;left:891px;top:-29px;width:707px;height:739px;overflow:visible;pointer-events:none;
+  transform:rotate(calc(-60deg + var(--flower-spin, 0deg)));transition:transform .2s linear}
+.about .flower-svg path{stroke-dasharray:var(--len, 3000);stroke-dashoffset:0}
+.motion .about .flower-svg:not(.drawn) path{stroke-dashoffset:var(--len, 3000)}
+.motion .about .flower-svg.drawn path{transition:stroke-dashoffset 2.4s cubic-bezier(.6,.1,.2,1)}
+.about .kid{transform:translateY(var(--kid-shift, 0px));transition:transform .2s linear}
+@media (min-width:1200px){.about .flower-svg{left:calc(var(--gx, 0px) + 891px)}}
+@media (max-width:1199px){.about .flower-svg{left:22%;top:-10%;width:60%;height:auto}}
+
+/* 3. Share Your Story opens up: leaf photo grows from a petal, headline slides in */
+.leaf-photo{transform:scale(var(--leaf-scale, 1)) rotate(var(--leaf-rot, 0deg));transform-origin:30% 70%;transition:transform .15s linear}
+.leaf-photo img{transform:scale(calc(2 - var(--leaf-scale, 1)));transition:transform .15s linear}
+.share .copy{transform:translateX(var(--copy-x, 0px));opacity:var(--copy-o, 1);transition:transform .15s linear, opacity .15s linear}
+
+/* 4. Sections ease in as they arrive (only elements below the fold at load are hidden) */
+.motion [data-reveal]:not(.in){opacity:0;transform:translateY(36px)}
+.motion [data-reveal]{transition:opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d, 0) * 110ms)}
+
+/* 5. Story cards: photo zooms, the tab stretches and its arrow nudges */
+.story .ph img{transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.story:hover .ph img,.story:focus-visible .ph img{transform:scale(1.07)}
+.story .tab{transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.story:hover .tab,.story:focus-visible .tab{width:60%}
+.story .tab .arr{display:inline-block;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.story:hover .tab .arr{transform:translateX(6px)}
+
+/* 6. Donor Voices: quotes drift in a slow strip that pauses on hover */
+.quotes.marquee{display:block;overflow:hidden;margin-inline:calc(-1 * var(--gx, 0px) - 77px);
+}
+.quotes.marquee .track{display:flex;gap:46px;width:max-content;will-change:transform}
+.quotes.marquee .quote{width:558px;flex:none}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 23px))}}
+@media (max-width:1199px){
+  .quotes.marquee{margin-inline:-20px;max-width:none}
+  .quotes.marquee .quote{width:min(80vw,420px)}
+}
+
+/* Seam fix: when the story photo zooms it is redrawn at a fractional size under the page zoom,
+   which opened a hairline between photo, tab and panel. Overlap them by 2px so nothing shows through. */
+.story .body{z-index:1}
+.story .body::before{content:"";position:absolute;left:0;right:0;top:-2px;height:3px;background:var(--cream)}
+.story .tab{top:-49px;height:51px}
+.story .tab::after{bottom:2px;width:25px;height:25px;right:-24.5px;background:radial-gradient(circle at 100% 0, transparent 23.5px, var(--cream) 24.2px)}
+
+/* Donor Voices mark beats like a heart: lub-dub, then rest (~72 bpm). Off for reduce-motion visitors. */
+.voices .mark{transform-origin:50% 60%;animation:heartbeat 1.6s ease-in-out infinite;will-change:transform}
+@keyframes heartbeat{
+  0%  {transform:scale(1);   filter:drop-shadow(0 0 0 rgba(189,58,147,0))}
+  10% {transform:scale(1.22);filter:drop-shadow(0 0 10px rgba(189,58,147,.55))}
+  20% {transform:scale(1.02);filter:drop-shadow(0 0 2px rgba(189,58,147,.15))}
+  30% {transform:scale(1.16);filter:drop-shadow(0 0 8px rgba(189,58,147,.45))}
+  45% {transform:scale(1);   filter:drop-shadow(0 0 0 rgba(189,58,147,0))}
+  100%{transform:scale(1);   filter:drop-shadow(0 0 0 rgba(189,58,147,0))}
+}
