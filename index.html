@@ -104,8 +104,9 @@ p{margin:0}
 @media (max-width:1199px){.hero-controls.ctl-bar{top:auto;bottom:40px}}
 /* Hand-drawn pink underline under a key word in each headline (drawn on scroll by motion.js) */
 .u{position:relative;white-space:nowrap}
-.u-line{position:absolute;left:-3%;width:106%;bottom:-.16em;height:.26em;overflow:visible;pointer-events:none}
-.u-line path{fill:none;stroke:var(--magenta);stroke-width:3.2;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:var(--u,0)}
+.u-line{position:absolute;left:-2%;width:104%;bottom:-.02em;height:max(3px,.055em);background:var(--magenta);border-radius:3px;pointer-events:none;transform-origin:left center;transform:scaleX(calc(1 - var(--u, 0)))}
+.u-line path{display:none}
+.hero-copy .u-line{bottom:.17em}
 .ctl-pp .i-play{display:none}
 .ctl-pp[aria-pressed="true"] .i-pause{display:none}
 .ctl-pp[aria-pressed="true"] .i-play{display:block}
@@ -395,7 +396,7 @@ dialog .btn{justify-self:start}
     <div class="hero-copy" id="heroCopy">
       <div class="slide-text">
         <span class="eyebrow hero-tag" id="heroTag">Cardiac</span>
-        <h1 id="heroTitle">Your hardest days deserve our best.</h1>
+        <h1 id="heroTitle">Your hardest days deserve <span class="u">our best<svg class="u-line" viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 10H198"/></svg></span>.</h1>
         <p id="heroBody">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
       </div>
       <button class="btn btn-white" id="heroStory">Read the Story</button>
@@ -638,10 +639,12 @@ dialog .btn{justify-self:start}
 
   // Hero carousel
   // Hero copy from "SHF Content Doc" > COMPLETE Home > Storytelling Hero Banner
+  // key phrase in each headline gets the pink underline
+  const U=w=>'<span class="u">'+w+'<svg class="u-line" viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 10H198"/></svg></span>';
   const slides=[
-    {tag:'Cardiac',t:'Your hardest days deserve our best.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'6fd4f.jpg',pos:'30% 30%',alt:'A smiling older woman with glasses'},
-    {tag:'Pediatric',t:'A first breath.<br>A second chance.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'8e6c4.jpg',pos:'50% 50%',alt:'A newborn resting in a hospital bassinet'},
-    {tag:'Oncology',t:'Early detection. Early intervention. More years together.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'02070.jpg',pos:'30% 35%',alt:'A caregiver sharing a laugh with an older woman'}
+    {tag:'Cardiac',t:'Your hardest days deserve '+U('our best')+'.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'6fd4f.jpg',pos:'30% 30%',alt:'A smiling older woman with glasses'},
+    {tag:'Pediatric',t:'A first breath.<br>A '+U('second chance')+'.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'8e6c4.jpg',pos:'50% 50%',alt:'A newborn resting in a hospital bassinet'},
+    {tag:'Oncology',t:'Early detection. Early intervention. '+U('More years together.'),b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'02070.jpg',pos:'30% 35%',alt:'A caregiver sharing a laugh with an older woman'}
   ];
   const sEls=$$('.slide'), dots=$$('.dots button'), copy=$('#heroCopy'); let idx=0, timer;
   function go(i){ if(i===idx)return; idx=i;
@@ -719,7 +722,7 @@ dialog .btn{justify-self:start}
 
   $('#heroStory').addEventListener('click',()=>{const s=slides[idx];
     $('#storyImg').src='assets/'+s.img;$('#storyImg').alt=s.alt;$('#storyImg').style.objectPosition=s.pos;
-    $('#storyTitle').innerHTML=s.t.replace('<br>',' ');$('#storyText').textContent=s.b;open($('#storyDlg'));});
+    $('#storyTitle').innerHTML=s.t.replace('<br>',' ').replace(/<svg[\s\S]*?<\/svg>/g,'');$('#storyText').textContent=s.b;open($('#storyDlg'));});
 
   // Share form
   $('#openShare').addEventListener('click',()=>{$('#shareForm').hidden=false;$('#shareDone').hidden=true;$('#shareErr').textContent='';open($('#shareDlg'));});

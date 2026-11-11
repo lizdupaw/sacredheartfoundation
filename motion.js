@@ -23,16 +23,38 @@
   function animateHero(){
     if (!title || title.dataset.split === title.innerHTML) return;
     let i = 0;
-    const html = title.innerHTML.split(/<br\s*\/?>/i).map(line =>
-      line.trim().split(/\s+/).filter(Boolean).map(w => `<span class="w"><span style="--i:${i++}">${w}</span></span>`).join(' ')
-    ).join('<br>');
-    title.innerHTML = html; title.dataset.split = html;
+    const words = text => text.split(/\s+/).filter(Boolean).map(w => `<span class="w"><span style="--i:${i++}">${w}</span></span>`);
+    const out = [];
+    title.childNodes.forEach(n => {
+      if (n.nodeType === 3){ const ws = words(n.textContent); if (ws.length){ if (/^\s/.test(n.textContent) && out.length) out.push(' '); out.push(ws.join(' ')); if (/\s$/.test(n.textContent)) out.push(' '); } }
+      else if (n.nodeName === 'BR') out.push('<br>');
+      else if (n.classList && n.classList.contains('u')){
+        const svg = n.querySelector('svg'); const txt = n.textContent;
+        out.push(`<span class="u">${words(txt).join(' ')}${svg ? svg.outerHTML : ''}</span>`);
+      }
+    });
+    const html = out.join('').replace(/ +/g, ' ').replace(/ (\.)/g, '$1');
+    title.innerHTML = html; title.dataset.split = title.innerHTML;
     [tag, body, btn].forEach(el => { if(!el) return; el.classList.remove('anim'); void el.offsetWidth; el.classList.add('anim'); });
   }
   if (title){
     animateHero();
     new MutationObserver(() => { if (title.innerHTML !== title.dataset.split) animateHero(); })
       .observe(title, {childList:true, characterData:true, subtree:true});
+  }
+
+  /* ---------- 1b. Hero slide change: new photo opens out of a leaf-shaped window over the old one ---------- */
+  const hero = $('.hero'), slideEls = $$('.hero .slide');
+  if (hero && slideEls.length){
+    let current = slideEls.find(sl => sl.classList.contains('on'));
+    slideEls.forEach(sl => new MutationObserver(() => {
+      if (!sl.classList.contains('on') || sl === current) return;
+      slideEls.forEach(o => o.classList.remove('prev'));
+      if (current) current.classList.add('prev');
+      current = sl;
+      hero.classList.add('leafing');
+      clearTimeout(hero._t); hero._t = setTimeout(() => slideEls.forEach(o => o.classList.remove('prev')), 1500);
+    }).observe(sl, {attributes:true, attributeFilter:['class']}));
   }
 
   /* ---------- 2. About flower: swap the image for an inline SVG so its line can draw itself ---------- */
@@ -146,18 +168,23 @@
   /* ---------- 2 + 3. Scroll-linked motion (petal, flower drift, kid parallax, Share Your Story) ---------- */
   const share = $('.share'), about = $('.about'), petal = $('.share h2 .petal'), kid = $('.about .kid');
   const leaf = $('.leaf-photo'), shareCopy = $('.share .copy');
-  const stats = $('.stats'), underlines = $$('.u');
+  const stats = $('.stats'), underlines = $$('.u').filter(u => !u.closest('.hero'));   // hero underlines animate per slide instead
   // stagger the underline loops so they don't all redraw at once
   underlines.forEach((u, k) => u.style.setProperty('--glint-delay', (k * 0.9).toFixed(1) + 's'));
   function onScroll(){
     // trust bar icons: draw in once the bar is on screen
     if (stats && !stats.classList.contains('icons-in') && stats.getBoundingClientRect().top < vh(stats) * 0.85) stats.classList.add('icons-in');
-    // headline underlines: draw as the word travels from 88% to 55% of the screen height
+    // headline underlines: once the headline is on screen, wait for its fade-in to finish, then draw the line
     underlines.forEach(u => {
-      const r = u.getBoundingClientRect(), h = vh(u);
-      const t = Math.min(1, Math.max(0, (h * 0.88 - r.top) / (h * 0.33)));
-      u.style.setProperty('--u', (1 - ease(t)).toFixed(3));
-      u.classList.toggle('u-done', t >= 1);
+      if (u.dataset.armed) return;
+      if (u.getBoundingClientRect().top > vh(u) * 0.8) return;
+      u.dataset.armed = '1';
+      const fading = u.closest('[data-reveal]');                 // the headline that fades up
+      const wait = fading ? 1150 : 350;                          // fade-up is 0.9s (+ stagger)
+      setTimeout(() => {
+        u.classList.add('u-drawn');                              // 1.1s draw, left -> right
+        setTimeout(() => u.classList.add('u-done'), 1300);       // then the looping redraw starts
+      }, wait);
     });
     if (share){
       const p = progress(share);
