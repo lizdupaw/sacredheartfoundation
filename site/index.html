@@ -72,20 +72,30 @@ p{margin:0}
 .hero-copy p{font-size:22px;line-height:1.45;max-width:732px;margin-bottom:30px}
 .hero-copy .slide-text{transition:opacity .5s ease;display:flex;flex-direction:column;justify-content:flex-end} /* spare height goes above the headline, so body + button stay locked together */
 .hero-copy.fading .slide-text{opacity:0}
-.hero-controls{position:absolute;z-index:3;left:50%;transform:translateX(-50%);top:714px;display:flex;align-items:center;gap:18px}
-.dots{display:flex;gap:10px}
-.ctl{width:46px;height:46px;border-radius:50%;border:1.5px solid currentColor;background:transparent;color:var(--white);display:grid;place-items:center;padding:0;transition:background-color .2s ease,color .2s ease,transform .2s ease}
-.ctl svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Slider controls: one frosted pill — arrows, progress bars that fill while a slide shows, counter, pause */
+.ctl-bar{display:flex;align-items:center;gap:2px;padding:6px;border-radius:999px;background:rgba(25,39,81,.42);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--white)}
+.hero-controls{position:absolute;z-index:3;left:50%;transform:translateX(-50%);top:714px}
+.quote-controls{width:max-content;margin:36px auto 0;background:rgba(255,255,255,.06)}
+.ctl{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:inherit;display:grid;place-items:center;padding:0;transition:background-color .2s ease,transform .2s ease}
+.ctl svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ctl .i-play{fill:currentColor;stroke:none}
-.ctl:hover{background:var(--white);color:var(--navy)}
-.ctl:active{transform:scale(.94)}
+.ctl:hover{background:rgba(255,255,255,.16)}
+.ctl:active{transform:scale(.9)}
+.dots{display:flex;gap:6px;padding:0 10px}
+.dots button{position:relative;width:46px;height:28px;border:0;background:transparent;padding:0;cursor:pointer}
+.dots button::before,.dots button::after{content:"";position:absolute;left:0;top:50%;height:3px;margin-top:-1.5px;border-radius:3px}
+.dots button::before{right:0;background:rgba(255,255,255,.28);transition:background-color .2s ease}
+.dots button:hover::before{background:rgba(255,255,255,.5)}
+.dots button::after{width:0;background:var(--white)}
+.dots button[aria-current="true"]::after{width:100%;animation:segfill var(--seg-dur,7s) linear both}
+.ctl-bar.is-paused .dots button[aria-current="true"]::after{animation-play-state:paused}
+@keyframes segfill{from{width:0}to{width:100%}}
+.ctl-count{display:flex;align-items:center;height:22px;margin-left:6px;padding:0 8px 0 14px;border-left:1px solid rgba(255,255,255,.22);font-size:13px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctl-count .of{opacity:.55;font-weight:500;margin-left:5px}
 .ctl-pp .i-play{display:none}
 .ctl-pp[aria-pressed="true"] .i-pause{display:none}
 .ctl-pp[aria-pressed="true"] .i-play{display:block}
-.quote-controls{display:flex;justify-content:center;gap:14px;margin-top:40px}
 [hidden]{display:none!important}
-.dots button{width:17px;height:17px;border-radius:50%;border:1px solid var(--white);background:transparent;padding:0}
-.dots button[aria-current="true"]{background:var(--white)}
 
 /* ---------- Trust bar (280 tall · tiles 423x152 · 25px gaps) ---------- */
 .stats{background:var(--cream-2);height:280px;padding:64px var(--side) 0}
@@ -256,8 +266,9 @@ dialog .btn{justify-self:start}
   .hero-copy{position:relative;left:auto;top:auto;width:auto;max-width:640px;padding:170px 20px 110px}
   .hero-copy h1{font-size:clamp(40px,7vw,64px);margin-bottom:20px}
   .hero-copy p{font-size:18px;margin-bottom:28px}
-  .hero-controls{top:auto;bottom:36px;gap:12px}
-  .ctl{width:40px;height:40px}
+  .hero-controls{top:auto;bottom:28px}
+  .dots button{width:30px}
+  .ctl-count{display:none}
 
   .stats{height:auto;padding:40px 20px}
   .stats .grid{grid-template-columns:repeat(2,1fr);gap:16px}
@@ -373,7 +384,7 @@ dialog .btn{justify-self:start}
       </div>
       <button class="btn btn-white" id="heroStory">Read the Story</button>
     </div>
-    <div class="hero-controls">
+    <div class="hero-controls ctl-bar">
       <button class="ctl" id="heroPrev" aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button>
       <div class="dots" role="tablist" aria-label="Choose slide">
         <button role="tab" aria-label="Slide 1" aria-current="true"></button>
@@ -381,6 +392,7 @@ dialog .btn{justify-self:start}
         <button role="tab" aria-label="Slide 3" aria-current="false"></button>
       </div>
       <button class="ctl" id="heroNext" aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+      <span class="ctl-count" aria-hidden="true"><span id="heroCount">01</span><span class="of">/ 03</span></span>
       <button class="ctl ctl-pp" id="heroPause" aria-label="Pause slideshow" aria-pressed="false"><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5v11M15 6.5v11"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.2v11.6L18 12z"/></svg></button>
     </div>
   </section>
@@ -489,7 +501,7 @@ dialog .btn{justify-self:start}
         <figure class="quote"><div class="q-photo"><img src="assets/5eb24.jpg" alt="" style="object-position:50% 20%" loading="lazy"></div><blockquote>“Giving back felt small until I saw what it actually funds. Knowing my gift helped someone get through treatment means everything to me.”</blockquote><figcaption><span class="q-name">Jill Placeholder</span><span class="q-role">Donor</span></figcaption></figure>
         <figure class="quote"><div class="q-photo"><img src="assets/bd13e.jpg" alt="" style="object-position:30% 30%" loading="lazy"></div><blockquote>“We started a fundraiser at our office, and it turned into something bigger than any of us planned. Every dollar went straight to care.”</blockquote><figcaption><span class="q-name">Jo Placeholder</span><span class="q-role">Donor</span></figcaption></figure>
       </div>
-      <div class="quote-controls" hidden><button class="ctl" id="qPrev" aria-label="Previous quote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button><button class="ctl ctl-pp" id="qPause" aria-label="Pause quotes" aria-pressed="false"><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5v11M15 6.5v11"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.2v11.6L18 12z"/></svg></button><button class="ctl" id="qNext" aria-label="Next quote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button></div>
+      <div class="quote-controls ctl-bar" hidden><button class="ctl" id="qPrev" aria-label="Previous quote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button><button class="ctl ctl-pp" id="qPause" aria-label="Pause quotes" aria-pressed="false"><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5v11M15 6.5v11"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.2v11.6L18 12z"/></svg></button><button class="ctl" id="qNext" aria-label="Next quote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button></div>
     </div>
   </section>
 
@@ -618,7 +630,7 @@ dialog .btn{justify-self:start}
   ];
   const sEls=$$('.slide'), dots=$$('.dots button'), copy=$('#heroCopy'); let idx=0, timer;
   function go(i){ if(i===idx)return; idx=i;
-    sEls.forEach((s,j)=>s.classList.toggle('on',j===i)); dots.forEach((d,j)=>d.setAttribute('aria-current',j===i));
+    sEls.forEach((s,j)=>s.classList.toggle('on',j===i)); dots.forEach((d,j)=>d.setAttribute('aria-current',j===i)); $('#heroCount').textContent=String(i+1).padStart(2,'0');
     copy.classList.add('fading'); setTimeout(()=>{$('#heroTag').textContent=slides[i].tag;$('#heroTitle').innerHTML=slides[i].t;$('#heroBody').textContent=slides[i].b;copy.classList.remove('fading');},reduce?0:450);
   }
   // Keep every slide's headline the same size and the text block the same height,
@@ -632,14 +644,17 @@ dialog .btn{justify-self:start}
   }
   lockHeroHeight();addEventListener('resize',lockHeroHeight);
   if(document.fonts)document.fonts.ready.then(lockHeroHeight);
-  let paused=reduce; const pp=$('#heroPause');
-  function auto(){clearInterval(timer);if(!paused)timer=setInterval(()=>go((idx+1)%slides.length),7000);}
-  function setPaused(v){paused=v;pp.setAttribute('aria-pressed',v);pp.setAttribute('aria-label',v?'Play slideshow':'Pause slideshow');auto();}
-  dots.forEach((d,i)=>d.addEventListener('click',()=>{go(i);auto();}));
-  $('#heroPrev').addEventListener('click',()=>{go((idx+slides.length-1)%slides.length);auto();});
-  $('#heroNext').addEventListener('click',()=>{go((idx+1)%slides.length);auto();});
+  // The active progress bar fills over 7s; when it finishes, the next slide shows. Pausing freezes the bar.
+  let paused=reduce; const pp=$('#heroPause'), bar=$('.hero-controls');
+  function setPaused(v){paused=v;bar.classList.toggle('is-paused',v);pp.setAttribute('aria-pressed',v);pp.setAttribute('aria-label',v?'Play slideshow':'Pause slideshow');}
+  dots.forEach((d,i)=>{
+    d.addEventListener('click',()=>go(i));
+    d.addEventListener('animationend',e=>{ if(e.animationName==='segfill'&&d.getAttribute('aria-current')==='true') go((idx+1)%slides.length); });
+  });
+  $('#heroPrev').addEventListener('click',()=>go((idx+slides.length-1)%slides.length));
+  $('#heroNext').addEventListener('click',()=>go((idx+1)%slides.length));
   pp.addEventListener('click',()=>setPaused(!paused));
-  if(reduce)setPaused(true); auto();
+  setPaused(paused);
 
   // Trust bar counter: final values live in the markup; JS resets them to 0 and counts up
   // (staggered, ease-out) the first time the bar scrolls into view.
