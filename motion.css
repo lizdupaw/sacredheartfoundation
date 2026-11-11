@@ -46,8 +46,8 @@
 .quotes.spotlight{display:block;overflow:hidden;margin-inline:calc(-1 * var(--gx, 0px) - 77px);padding-block:24px}
 .quotes.spotlight .track{display:flex;align-items:center;gap:46px;width:max-content;transition:transform .85s cubic-bezier(.65,0,.35,1)}
 .quotes.spotlight .quote{width:620px;flex:none;cursor:pointer;transform:scale(.84);opacity:.42;
-  transition:transform .85s cubic-bezier(.65,0,.35,1),opacity .85s ease,box-shadow .85s ease}
-.quotes.spotlight .quote.is-active{transform:none;opacity:1;cursor:default;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+  transition:transform .85s cubic-bezier(.65,0,.35,1),opacity .85s ease}
+.quotes.spotlight .quote.is-active{transform:none;opacity:1;cursor:default}
 .quotes.spotlight .q-photo{transform:scale(.55);transform-origin:50% 50%;transition:transform .9s cubic-bezier(.2,.8,.2,1) .25s}
 .quotes.spotlight .quote.is-active .q-photo{transform:none}
 .quotes.spotlight .track.no-anim,.quotes.spotlight .track.no-anim *{transition:none!important}
