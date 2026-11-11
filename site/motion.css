@@ -42,15 +42,21 @@
 .story .tab .arr{display:inline-block;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
 .story:hover .tab .arr{transform:translateX(6px)}
 
-/* 6. Donor Voices: quotes drift in a slow strip that pauses on hover */
-.quotes.marquee{display:block;overflow:hidden;margin-inline:calc(-1 * var(--gx, 0px) - 77px);
-}
-.quotes.marquee .track{display:flex;gap:46px;width:max-content;will-change:transform}
-.quotes.marquee .quote{width:558px;flex:none}
-@keyframes drift{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 23px))}}
+/* 6. Donor Voices spotlight: centre quote in focus, neighbours shrink and fade; portrait opens from a petal */
+.quotes.spotlight{display:block;overflow:hidden;margin-inline:calc(-1 * var(--gx, 0px) - 77px);padding-block:24px}
+.quotes.spotlight .track{display:flex;align-items:center;gap:46px;width:max-content;transition:transform .85s cubic-bezier(.65,0,.35,1)}
+.quotes.spotlight .quote{width:620px;flex:none;cursor:pointer;transform:scale(.84);opacity:.42;
+  transition:transform .85s cubic-bezier(.65,0,.35,1),opacity .85s ease,box-shadow .85s ease}
+.quotes.spotlight .quote.is-active{transform:none;opacity:1;cursor:default;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.quotes.spotlight .quote::after{opacity:0;transition:opacity .6s ease .3s}
+.quotes.spotlight .quote.is-active::after{opacity:.55}
+.quotes.spotlight .q-photo{transform:scale(.55) rotate(-14deg);transform-origin:30% 70%;transition:transform .9s cubic-bezier(.2,.8,.2,1) .25s}
+.quotes.spotlight .quote.is-active .q-photo{transform:none}
+.quotes.spotlight .track.no-anim,.quotes.spotlight .track.no-anim *{transition:none!important}
 @media (max-width:1199px){
-  .quotes.marquee{margin-inline:-20px;max-width:none}
-  .quotes.marquee .quote{width:min(80vw,420px)}
+  .quotes.spotlight{margin-inline:-20px;max-width:none}
+  .quotes.spotlight .quote{width:min(82vw,460px)}
+  .quotes.spotlight .track{gap:16px}
 }
 
 /* Seam fix: when the story photo zooms it is redrawn at a fractional size under the page zoom,
