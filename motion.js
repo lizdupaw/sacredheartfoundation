@@ -53,7 +53,7 @@
       if (current) current.classList.add('prev');
       current = sl;
       hero.classList.add('leafing');
-      clearTimeout(hero._t); hero._t = setTimeout(() => slideEls.forEach(o => o.classList.remove('prev')), 1500);
+      clearTimeout(hero._t); hero._t = setTimeout(() => slideEls.forEach(o => o.classList.remove('prev')), 1900);
     }).observe(sl, {attributes:true, attributeFilter:['class']}));
   }
 

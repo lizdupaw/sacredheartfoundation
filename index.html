@@ -42,7 +42,12 @@ p{margin:0}
 .btn-teal{background:var(--teal);color:var(--white)}
 .btn-teal:hover{background:#027f82}
 .link{color:var(--magenta);text-decoration:none;font-size:18px;line-height:1.25;background:none;border:0;padding:0;text-align:left}
-.link:hover{text-decoration:underline;text-underline-offset:4px}
+.link{display:inline-flex;align-items:baseline;gap:4px}
+/* hover: letters thicken (stroke, so the width never changes and nothing shifts) and the arrow slides right */
+.link .lt{transition:-webkit-text-stroke-width .2s ease}
+.link .la{display:inline-block;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.link:hover .lt,.link:focus-visible .lt{-webkit-text-stroke:.6px currentColor;text-shadow:0 0 .4px currentColor}
+.link:hover .la,.link:focus-visible .la{transform:translateX(6px)}
 .mark{display:block;margin-inline:auto}
 
 /* ---------- Nav (Figma: logo 170x48 at 128,38 · links 17px from x950, 36px gaps, right edge 1800) ---------- */
@@ -436,25 +441,25 @@ dialog .btn{justify-self:start}
           <div class="ph"><img src="assets/bd13e.jpg" alt="A smiling woman with braids" style="object-position:30% 50%"></div>
           <div class="txt"><span class="bar"></span><span class="eyebrow">Give</span><h3>Your gift goes further here.</h3>
             <p>Every gift helps provide compassionate care, advanced technology, lifesaving equipment, and programs that support patients and families throughout our community.</p>
-            <div class="links"><button class="link" data-donate="personal">Personal &amp; Family Giving »</button><button class="link" data-donate="corporate">Corporate Giving »</button></div></div>
+            <div class="links"><button class="link" data-donate="personal"><span class="lt" data-t="Personal &amp; Family Giving">Personal &amp; Family Giving</span><span class="la">»</span></button><button class="link" data-donate="corporate"><span class="lt" data-t="Corporate Giving">Corporate Giving</span><span class="la">»</span></button></div></div>
         </article>
         <article class="dcard">
           <div class="ph"><img src="assets/a56c4.jpg" alt="Guests gathered at a foundation event" style="object-position:50% 60%"></div>
           <div class="txt"><span class="bar"></span><span class="eyebrow">Attend</span><h3>Come together. Leave a lasting impact.</h3>
             <p>From signature events to community fundraisers, every gathering is an opportunity to come together, celebrate generosity, and support exceptional care close to home.</p>
-            <div class="links"><button class="link stub" data-page="Upcoming Events">Upcoming Events »</button></div></div>
+            <div class="links"><button class="link stub" data-page="Upcoming Events"><span class="lt" data-t="Upcoming Events">Upcoming Events</span><span class="la">»</span></button></div></div>
         </article>
         <article class="dcard">
           <div class="ph"><img src="assets/c61d1.jpg" alt="Colorful balloon arch at a fundraiser" style="object-position:50% 45%"></div>
           <div class="txt"><span class="bar"></span><span class="eyebrow">Fundraise</span><h3>Start something that heals.</h3>
             <p>Create a fundraiser your way. Celebrate a milestone, rally your workplace, host an event, or bring your community together to support the programs and services that matter most to you.</p>
-            <div class="links"><button class="link stub" data-page="Start a Fundraiser">Start a Fundraiser »</button></div></div>
+            <div class="links"><button class="link stub" data-page="Start a Fundraiser"><span class="lt" data-t="Start a Fundraiser">Start a Fundraiser</span><span class="la">»</span></button></div></div>
         </article>
         <article class="dcard">
           <div class="ph"><img src="assets/02070.jpg" alt="A volunteer sharing a laugh with an older woman" style="object-position:22% 50%"></div>
           <div class="txt"><span class="bar"></span><span class="eyebrow">Volunteer</span><h3>Your time heals, too.</h3>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            <div class="links"><button class="link stub" data-page="Volunteer">Volunteer »</button></div></div>
+            <div class="links"><button class="link stub" data-page="Volunteer"><span class="lt" data-t="Volunteer">Volunteer</span><span class="la">»</span></button></div></div>
         </article>
       </div>
     </div>
