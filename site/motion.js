@@ -86,7 +86,7 @@
     const items = [...track.children];
     let i = n, paused = false, hover = false;
     const ctl = $('.quote-controls');
-    let segs = [], countEl = null;
+    let segs = [];
 
     function place(animate){
       if (!animate) track.classList.add('no-anim');
@@ -96,7 +96,6 @@
       items.forEach((el, j) => el.classList.toggle('is-active', j === i));
       const real = ((i - n) % n + n) % n;
       segs.forEach((b, j) => b.setAttribute('aria-current', j === real));
-      if (countEl) countEl.textContent = String(real + 1).padStart(2, '0');
       if (!animate){ void track.offsetWidth; track.classList.remove('no-anim'); }
     }
     function go(to){
@@ -121,7 +120,7 @@
     if (ctl){
       ctl.hidden = false;
       ctl.style.setProperty('--seg-dur', '6s');
-      // progress bars + counter, laid out: prev · bars · next · counter · pause
+      // dots, laid out: prev · dots · next · pause
       const dotsWrap = document.createElement('div'); dotsWrap.className = 'dots'; dotsWrap.setAttribute('role', 'tablist'); dotsWrap.setAttribute('aria-label', 'Choose quote');
       cards.forEach((c, j) => {
         const b = document.createElement('button'); b.setAttribute('role', 'tab'); b.setAttribute('aria-label', 'Quote ' + (j + 1));
@@ -129,13 +128,9 @@
         b.addEventListener('animationend', e => { if (e.animationName === 'segfill' && b.getAttribute('aria-current') === 'true') next(); });
         dotsWrap.appendChild(b); segs.push(b);
       });
-      const count = document.createElement('span'); count.className = 'ctl-count'; count.setAttribute('aria-hidden', 'true');
-      count.innerHTML = '<span>01</span><span class="of">/ ' + String(n).padStart(2, '0') + '</span>';
-      countEl = count.firstChild;
       const qNext = $('#qNext'), qPause = $('#qPause');
       ctl.insertBefore(dotsWrap, qPause);
       ctl.insertBefore(qNext, qPause);
-      ctl.insertBefore(count, qPause);
       $('#qPrev').addEventListener('click', () => prev());
       qNext.addEventListener('click', () => next());
       const pp = $('#qPause');
