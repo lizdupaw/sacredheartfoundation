@@ -155,7 +155,7 @@
 
 /* Stay Connected leaves: while the cursor is over the section, each leaf bobs and sways at its own pace,
    and the whole set drifts away from the cursor (bigger leaves move more). Eases back when the cursor leaves. */
-.connect-leaves .leaf{transform-box:fill-box;transform-origin:50% 50%;transform:translate(var(--px,0px),var(--py,0px)) scale(var(--ps,1));transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.connect-leaves .leaf{transform-box:fill-box;transform-origin:50% 50%;transform:translate(var(--px,0px),calc(var(--py,0px) + var(--fit,0px))) scale(var(--ps,1));transition:transform .7s cubic-bezier(.2,.8,.2,1)}
 .connect-leaves .leaf path{transform-box:fill-box;transform-origin:50% 50%;transition:transform 1.2s ease}
 .motion .connect.floating .connect-leaves .leaf path{animation:leaffloat var(--fd,6s) ease-in-out var(--fdl,0s) infinite alternate}
 @keyframes leaffloat{
