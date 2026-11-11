@@ -390,6 +390,7 @@ dialog .btn{justify-self:start}
 .connect > .wrap > *{position:relative;z-index:1}
 .connect-leaves{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .connect-leaves path{fill:#2E4DB6}
+.connect-leaves .leaf{transform:translateY(var(--fit,0px))}
 @media (min-width:1200px){.connect{min-height:691px;justify-content:center;padding-top:60px;padding-bottom:60px}}
 @media (max-width:1199px){.connect-leaves{opacity:.7}}
 </style>
@@ -660,17 +661,25 @@ dialog .btn{justify-self:start}
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Stay Connected leaves: hide any leaf that's mostly cut off by the section edge (no slivers at any width)
-  function trimLeaves(){
-    const sec=$('.connect'); if(!sec) return; const sr=sec.getBoundingClientRect();
+  // Stay Connected leaves: any leaf clipped by the section's top or bottom edge is nudged inside it
+  // (with a small margin) so nothing is cut off at any width. Leaves bleeding off the sides stay, as in Figma.
+  function fitLeaves(){
+    const sec=$('.connect'), svg=$('.connect-leaves'); if(!sec||!svg) return;
+    const sr=sec.getBoundingClientRect(), margin=sr.height*0.04;
     $$('.connect-leaves .leaf').forEach(g=>{
-      g.style.visibility='';
+      g.style.setProperty('--fit','0px'); g.style.visibility='';
       const r=g.getBoundingClientRect(); if(!r.height) return;
-      const vis=Math.min(r.bottom,sr.bottom)-Math.max(r.top,sr.top), visW=Math.min(r.right,sr.right)-Math.max(r.left,sr.left);
-      if(vis>0 && visW>0 && (vis/r.height<0.5 || visW/r.width<0.35)) g.style.visibility='hidden';
+      const k=g.getBBox().height/r.height;               // leaf-layer units per screen pixel
+      let shift=0;
+      if(r.bottom>sr.bottom-margin && r.top<sr.bottom) shift=-(r.bottom-(sr.bottom-margin));
+      else if(r.top<sr.top+margin && r.bottom>sr.top) shift=(sr.top+margin)-r.top;
+      if(r.height>sr.height-2*margin) shift=0;           // too tall to fit: leave it
+      g.style.setProperty('--fit',(shift*k).toFixed(1)+'px');
+      const visW=Math.min(r.right,sr.right)-Math.max(r.left,sr.left);
+      if(visW>0 && visW/r.width<0.35) g.style.visibility='hidden';   // thin slivers at the sides
     });
   }
-  trimLeaves(); addEventListener('resize',trimLeaves); if(document.fonts) document.fonts.ready.then(trimLeaves); setTimeout(trimLeaves,600);
+  fitLeaves(); addEventListener('resize',fitLeaves); if(document.fonts) document.fonts.ready.then(fitLeaves); setTimeout(fitLeaves,600);
 
   // Toast
   let tt; function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);}
