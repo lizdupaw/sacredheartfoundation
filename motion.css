@@ -95,11 +95,9 @@
 .motion .stats.icons-in .s3 .beat{animation:iconbeat 1.6s ease-in-out 3s infinite}
 .motion .stats.icons-in .s2 .hop{transform-origin:50% 100%;animation:hop 4s cubic-bezier(.3,.7,.4,1) 2.6s infinite}
 .motion .stats.icons-in .s2 .ripple{transform-origin:50% 50%;animation:ripple 4s ease-out 2.6s infinite}
-.motion .stats.icons-in .s4 .tick{animation:tick 5s cubic-bezier(.6,.1,.2,1) 3.4s infinite}
 @keyframes iconbeat{0%,45%,100%{transform:scale(1)}10%{transform:scale(1.14)}20%{transform:scale(1.02)}30%{transform:scale(1.1)}}
 @keyframes hop{0%,62%,100%{transform:translateY(0)}72%{transform:translateY(-3px)}82%{transform:translateY(0) scaleY(.94)}88%{transform:none}}
 @keyframes ripple{0%,80%{opacity:0;transform:scale(.6)}84%{opacity:.8}100%{opacity:0;transform:scale(1.8)}}
-@keyframes tick{0%,18%{stroke-dashoffset:1}38%,100%{stroke-dashoffset:0}}
 /* keep hover redraw from fighting the loops */
 .motion .stat:hover .stat-icon .tick{animation:redraw 1.1s cubic-bezier(.6,.1,.2,1) both}
 
@@ -112,4 +110,23 @@
   6%{opacity:.85}
   30%{stroke-dashoffset:-1.02;opacity:.85}
   34%,100%{stroke-dashoffset:-1.02;opacity:0}
+}
+
+/* Calendar: after it first draws in, the page flips up over the top (tear-off calendar) and a fresh page drops in, check redrawing */
+.stat-icon .page{transform-box:fill-box;transform-origin:50% 0}
+.stat-icon .sheet{stroke-width:1.2}
+.motion .stats.icons-in .s4 .page{animation:pageflip 5s cubic-bezier(.55,0,.35,1) 3s infinite}
+.motion .stats.icons-in .s4 .page .tick{animation:pagetick 5s ease-out 3s infinite}
+@keyframes pageflip{
+  0%,54%{transform:scaleY(1);opacity:1}
+  63%{transform:scaleY(0);opacity:1}
+  71%{transform:scaleY(-1);opacity:1}
+  77%{transform:scaleY(-1);opacity:0}
+  77.1%{transform:scaleY(0);opacity:1}
+  88%,100%{transform:scaleY(1);opacity:1}
+}
+@keyframes pagetick{
+  0%,77%{stroke-dashoffset:0}
+  77.1%,86%{stroke-dashoffset:1}
+  97%,100%{stroke-dashoffset:0}
 }
