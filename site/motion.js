@@ -69,12 +69,12 @@
       p.style.setProperty('--fx', rnd(-8, 8).toFixed(1) + 'px');
       p.style.setProperty('--fy', rnd(6, 16).toFixed(1) + 'px');
       p.style.setProperty('--fr', rnd(-9, 9).toFixed(1) + 'deg');
-      return {g, cx: b.x + b.width / 2, cy: b.y + b.height / 2, depth: Math.min(1.4, size / 120)};
+      return {g, cx: b.x + b.width / 2, cy: b.y + b.height / 2, w: b.width, h: b.height, depth: Math.min(1.4, size / 120)};
     });
     connect.addEventListener('mouseenter', () => connect.classList.add('floating'));
     connect.addEventListener('mouseleave', () => {
       connect.classList.remove('floating');
-      leafData.forEach(l => { l.g.style.setProperty('--px', '0px'); l.g.style.setProperty('--py', '0px'); });
+      leafData.forEach(l => { l.g.style.setProperty('--px', '0px'); l.g.style.setProperty('--py', '0px'); l.g.style.setProperty('--ps', '1'); });
     });
     const svgEl = $('.connect-leaves');
     connect.addEventListener('mousemove', e => {
@@ -88,6 +88,9 @@
         const push = Math.max(0, 1 - dist / 700) * 26 * l.depth;      // nearby leaves drift away most
         l.g.style.setProperty('--px', (dx / dist * push).toFixed(1) + 'px');
         l.g.style.setProperty('--py', (dy / dist * push).toFixed(1) + 'px');
+        // leaves under / near the cursor zoom up, easing off with distance
+        const near = Math.max(0, 1 - dist / (160 + Math.max(l.w, l.h) / 2));
+        l.g.style.setProperty('--ps', (1 + 0.45 * near * near).toFixed(3));
       });
     });
   }
