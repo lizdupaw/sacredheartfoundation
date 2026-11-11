@@ -654,7 +654,14 @@ dialog .btn{justify-self:start}
   if(document.fonts)document.fonts.ready.then(lockHeroHeight);
   // The active progress bar fills over 7s; when it finishes, the next slide shows. Pausing freezes the bar.
   let paused=reduce; const pp=$('#heroPause'), bar=$('.hero-controls');
-  function setPaused(v){paused=v;bar.classList.toggle('is-paused',v);pp.setAttribute('aria-pressed',v);pp.setAttribute('aria-label',v?'Play slideshow':'Pause slideshow');}
+  let hovering=false; const sync=()=>bar.classList.toggle('is-paused',paused||hovering);
+  function setPaused(v){paused=v;sync();pp.setAttribute('aria-pressed',v);pp.setAttribute('aria-label',v?'Play slideshow':'Pause slideshow');}
+  // hovering (or keyboard focus) anywhere on the hero holds the current slide; leaving resumes where it left off
+  const heroEl=$('.hero');
+  heroEl.addEventListener('mouseenter',()=>{hovering=true;sync();});
+  heroEl.addEventListener('mouseleave',()=>{hovering=false;sync();});
+  heroEl.addEventListener('focusin',()=>{hovering=true;sync();});
+  heroEl.addEventListener('focusout',e=>{ if(!heroEl.contains(e.relatedTarget)){hovering=false;sync();} });
   dots.forEach((d,i)=>{
     d.addEventListener('click',()=>go(i));
     d.addEventListener('animationend',e=>{ if(e.animationName==='segfill'&&d.getAttribute('aria-current')==='true') go((idx+1)%slides.length); });
