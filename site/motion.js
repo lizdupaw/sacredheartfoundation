@@ -57,6 +57,41 @@
     }).observe(sl, {attributes:true, attributeFilter:['class']}));
   }
 
+  /* ---------- 1c. Stay Connected leaves: float on hover, drift away from the cursor ---------- */
+  const connect = $('.connect'), leafEls = $$('.connect-leaves .leaf');
+  if (connect && leafEls.length){
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const leafData = leafEls.map(g => {
+      const b = g.getBBox(), size = Math.sqrt(b.width * b.height);
+      const p = g.firstChild;
+      p.style.setProperty('--fd', rnd(4.5, 8).toFixed(2) + 's');       // each leaf its own pace
+      p.style.setProperty('--fdl', (-rnd(0, 6)).toFixed(2) + 's');     // start mid-cycle so they don't sync
+      p.style.setProperty('--fx', rnd(-8, 8).toFixed(1) + 'px');
+      p.style.setProperty('--fy', rnd(6, 16).toFixed(1) + 'px');
+      p.style.setProperty('--fr', rnd(-9, 9).toFixed(1) + 'deg');
+      return {g, cx: b.x + b.width / 2, cy: b.y + b.height / 2, depth: Math.min(1.4, size / 120)};
+    });
+    connect.addEventListener('mouseenter', () => connect.classList.add('floating'));
+    connect.addEventListener('mouseleave', () => {
+      connect.classList.remove('floating');
+      leafData.forEach(l => { l.g.style.setProperty('--px', '0px'); l.g.style.setProperty('--py', '0px'); });
+    });
+    const svgEl = $('.connect-leaves');
+    connect.addEventListener('mousemove', e => {
+      const r = svgEl.getBoundingClientRect(), vb = svgEl.viewBox.baseVal;
+      // cursor position in leaf-layer units (the layer is scaled to cover, centered)
+      const sc = Math.max(r.width / vb.width, r.height / vb.height);
+      const mx = vb.x + vb.width / 2 + (e.clientX - (r.left + r.width / 2)) / sc;
+      const my = vb.y + vb.height / 2 + (e.clientY - (r.top + r.height / 2)) / sc;
+      leafData.forEach(l => {
+        const dx = l.cx - mx, dy = l.cy - my, dist = Math.hypot(dx, dy) || 1;
+        const push = Math.max(0, 1 - dist / 700) * 26 * l.depth;      // nearby leaves drift away most
+        l.g.style.setProperty('--px', (dx / dist * push).toFixed(1) + 'px');
+        l.g.style.setProperty('--py', (dy / dist * push).toFixed(1) + 'px');
+      });
+    });
+  }
+
   /* ---------- 2. About flower: swap the image for an inline SVG so its line can draw itself ---------- */
   const flowerImg = $('.about .flower');
   let flower = null;
