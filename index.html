@@ -660,6 +660,18 @@ dialog .btn{justify-self:start}
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Stay Connected leaves: hide any leaf that's mostly cut off by the section edge (no slivers at any width)
+  function trimLeaves(){
+    const sec=$('.connect'); if(!sec) return; const sr=sec.getBoundingClientRect();
+    $$('.connect-leaves .leaf').forEach(g=>{
+      g.style.visibility='';
+      const r=g.getBoundingClientRect(); if(!r.height) return;
+      const vis=Math.min(r.bottom,sr.bottom)-Math.max(r.top,sr.top), visW=Math.min(r.right,sr.right)-Math.max(r.left,sr.left);
+      if(vis>0 && visW>0 && (vis/r.height<0.5 || visW/r.width<0.35)) g.style.visibility='hidden';
+    });
+  }
+  trimLeaves(); addEventListener('resize',trimLeaves); if(document.fonts) document.fonts.ready.then(trimLeaves); setTimeout(trimLeaves,600);
+
   // Toast
   let tt; function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);}
 
