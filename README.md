@@ -23,6 +23,17 @@ python3 -m http.server 5173 --directory site
 
 Then open http://localhost:5173.
 
+## Publishing
+
+- **Live link:** https://lizdupaw.github.io/sacredheartfoundation/ (GitHub Pages, served from the `gh-pages` branch).
+- To publish, commit to `main`, then push the `site/` folder to `gh-pages`:
+
+```bash
+git subtree split --prefix site -b gh-pages && git push origin gh-pages
+```
+
+- Netlify (https://sacredheartfoundation.netlify.app) is still connected via `netlify.toml`, but production deploys are paused until the account's credits reset.
+
 ## How the layout scales
 
 The desktop layout is built 1:1 in Figma pixels (1920 frame). From 1200px wide and up, the page is
