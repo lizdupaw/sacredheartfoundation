@@ -405,7 +405,7 @@ dialog .btn{justify-self:start}
   .foot ul a{white-space:normal}
 }
 @media (max-width:640px){
-  .foot .cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .foot .cols{grid-template-columns:minmax(0,1fr);row-gap:28px}
   .foot .tag .acts{gap:24px}
   .legal{padding-bottom:calc(58px + env(safe-area-inset-bottom,0px))}  /* clear the fixed PROTOTYPE badge */
 }
