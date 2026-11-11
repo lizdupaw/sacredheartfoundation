@@ -363,6 +363,27 @@ dialog .btn{justify-self:start}
 }
 
 .connect > .wrap,.foot > .wrap{display:contents}
+
+/* ---------- Stay Connected: stacked + centered (text on top, form row below) ---------- */
+.connect{height:auto;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:34px;padding:84px 77px 90px}
+.connect .bar{margin-inline:auto}
+.connect h2{width:auto}
+.connect p{margin-inline:auto}
+.signup{grid-template-columns:repeat(3,207px) 150px;gap:10px 12px;margin-top:0;justify-content:center}
+.signup .row{display:contents}
+.signup .btn{grid-column:4;grid-row:1;height:52px}
+.signup .msg{grid-column:1/-1;grid-row:2;text-align:center;min-height:1.4em}
+@media (min-width:1200px){.connect{padding-left:calc(var(--gx) + 77px);padding-right:calc(var(--gx) + 77px)}}
+@media (max-width:1199px){
+  .connect{padding:56px 20px 64px;gap:28px}
+  .signup{grid-template-columns:repeat(2,minmax(0,220px))}
+  .signup .btn{grid-column:auto;grid-row:auto;width:100%}
+  .signup .msg{grid-row:auto;order:2}
+  .signup .btn{order:1}
+}
+@media (max-width:640px){
+  .signup{grid-template-columns:minmax(0,1fr);width:100%;max-width:360px}
+}
 </style>
 <link rel="stylesheet" href="motion.css">
 <script>
