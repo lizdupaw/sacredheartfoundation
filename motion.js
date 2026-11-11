@@ -84,7 +84,9 @@
     cards.forEach(c => track.appendChild(clone(c)));
     quotes.appendChild(track); quotes.classList.add('spotlight');
     const items = [...track.children];
-    let i = n, paused = false, hover = false, timer = null;
+    let i = n, paused = false, hover = false;
+    const ctl = $('.quote-controls');
+    let segs = [], countEl = null;
 
     function place(animate){
       if (!animate) track.classList.add('no-anim');
@@ -92,6 +94,9 @@
       const x = c.offsetLeft + c.offsetWidth / 2 - quotes.clientWidth / 2;
       track.style.transform = `translateX(${-x}px)`;
       items.forEach((el, j) => el.classList.toggle('is-active', j === i));
+      const real = ((i - n) % n + n) % n;
+      segs.forEach((b, j) => b.setAttribute('aria-current', j === real));
+      if (countEl) countEl.textContent = String(real + 1).padStart(2, '0');
       if (!animate){ void track.offsetWidth; track.classList.remove('no-anim'); }
     }
     function go(to){
@@ -103,29 +108,44 @@
       }, 900);
     }
     const next = () => go(i + 1), prev = () => go(i - 1);
-    function auto(){ clearInterval(timer); timer = setInterval(() => { if (!paused && !hover) next(); }, 6000); }
+    // the active progress bar fills over 6s and advances the quote when it finishes; hover or pause freezes it
+    const sync = () => ctl && ctl.classList.toggle('is-paused', paused || hover);
 
-    items.forEach((el, j) => el.addEventListener('click', () => { if (j !== i){ go(j); auto(); } }));
-    quotes.addEventListener('mouseenter', () => hover = true);
-    quotes.addEventListener('mouseleave', () => hover = false);
-    quotes.addEventListener('focusin', () => hover = true);
-    quotes.addEventListener('focusout', () => hover = false);
+    items.forEach((el, j) => el.addEventListener('click', () => { if (j !== i) go(j); }));
+    quotes.addEventListener('mouseenter', () => { hover = true; sync(); });
+    quotes.addEventListener('mouseleave', () => { hover = false; sync(); });
+    quotes.addEventListener('focusin', () => { hover = true; sync(); });
+    quotes.addEventListener('focusout', () => { hover = false; sync(); });
     addEventListener('resize', () => place(false));
     if (document.fonts) document.fonts.ready.then(() => place(false));
-    place(false); auto();
-
-    const ctl = $('.quote-controls');
     if (ctl){
       ctl.hidden = false;
-      $('#qPrev').addEventListener('click', () => { prev(); auto(); });
-      $('#qNext').addEventListener('click', () => { next(); auto(); });
+      ctl.style.setProperty('--seg-dur', '6s');
+      // progress bars + counter, laid out: prev · bars · next · counter · pause
+      const dotsWrap = document.createElement('div'); dotsWrap.className = 'dots'; dotsWrap.setAttribute('role', 'tablist'); dotsWrap.setAttribute('aria-label', 'Choose quote');
+      cards.forEach((c, j) => {
+        const b = document.createElement('button'); b.setAttribute('role', 'tab'); b.setAttribute('aria-label', 'Quote ' + (j + 1));
+        b.addEventListener('click', () => go(n + j));
+        b.addEventListener('animationend', e => { if (e.animationName === 'segfill' && b.getAttribute('aria-current') === 'true') next(); });
+        dotsWrap.appendChild(b); segs.push(b);
+      });
+      const count = document.createElement('span'); count.className = 'ctl-count'; count.setAttribute('aria-hidden', 'true');
+      count.innerHTML = '<span>01</span><span class="of">/ ' + String(n).padStart(2, '0') + '</span>';
+      countEl = count.firstChild;
+      const qNext = $('#qNext'), qPause = $('#qPause');
+      ctl.insertBefore(dotsWrap, qPause);
+      ctl.insertBefore(qNext, qPause);
+      ctl.insertBefore(count, qPause);
+      $('#qPrev').addEventListener('click', () => prev());
+      qNext.addEventListener('click', () => next());
       const pp = $('#qPause');
       pp.addEventListener('click', () => {
-        paused = !paused;
+        paused = !paused; sync();
         pp.setAttribute('aria-pressed', paused);
         pp.setAttribute('aria-label', paused ? 'Play quotes' : 'Pause quotes');
       });
     }
+    place(false); sync();
   }
 
   /* ---------- 2 + 3. Scroll-linked motion (petal, flower drift, kid parallax, Share Your Story) ---------- */
