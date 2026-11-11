@@ -206,10 +206,23 @@
   /* ---------- 2 + 3. Scroll-linked motion (petal, flower drift, kid parallax, Share Your Story) ---------- */
   const share = $('.share'), about = $('.about'), petal = $('.share h2 .petal'), kid = $('.about .kid');
   const leaf = $('.leaf-photo'), shareCopy = $('.share .copy');
-  const stats = $('.stats'), underlines = $$('.u').filter(u => !u.closest('.hero'));   // hero underlines animate per slide instead
+  const stats = $('.stats'), underlines = $$('.u').filter(u => !u.closest('.hero'));
+  // trinity icons bloom with scroll instead of the one-time fade-up
+  const blooms = $$('#giving .head .mark, #stories .head .mark');
+  blooms.forEach(mk => { mk.removeAttribute('data-reveal'); mk.classList.remove('in'); });
+  const backOut = t => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };   // hero underlines animate per slide instead
   // stagger the underline loops so they don't all redraw at once
   underlines.forEach((u, k) => u.style.setProperty('--glint-delay', (k * 0.9).toFixed(1) + 's'));
   function onScroll(){
+    blooms.forEach(mk => {
+      const r = mk.getBoundingClientRect(), h = vh(mk.parentElement), c = r.top + r.height / 2;   // measure via the parent: the icon itself can be scaled to 0
+      const tin  = Math.min(1, Math.max(0, (h * 0.96 - c) / (h * 0.3)));   // opens between 96% and 66% of the screen
+      const tout = Math.min(1, Math.max(0, (c - h * 0.02) / (h * 0.2)));   // folds away over the top 22%
+      const v = Math.min(tin, tout);
+      mk.style.setProperty('--bs', Math.max(0, backOut(v)).toFixed(3));
+      mk.style.setProperty('--br', (-120 * (1 - v)).toFixed(1) + 'deg');
+      mk.style.setProperty('--bo', Math.min(1, v * 2.5).toFixed(3));
+    });
     // trust bar icons: draw in once the bar is on screen
     if (stats && !stats.classList.contains('icons-in') && stats.getBoundingClientRect().top < vh(stats) * 0.85) stats.classList.add('icons-in');
     // headline underlines: once the headline is on screen, wait for its fade-in to finish, then draw the line

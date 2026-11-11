@@ -164,16 +164,9 @@
   100%{transform:translate(calc(var(--fx,4px) * -.6),calc(var(--fy,10px) * .5)) rotate(calc(var(--fr,4deg) * -.7))}
 }
 
-/* Section-head trinity icons (Make a Difference, Our Stories) bloom in when the section arrives:
-   grow from nothing while twisting a third of a turn, overshoot slightly, settle. The eyebrow and
-   headline wait a beat so the bloom leads; the headline underline still draws last. */
-.motion #giving .head .mark[data-reveal]:not(.in),.motion #stories .head .mark[data-reveal]:not(.in){opacity:0;transform:scale(0) rotate(-120deg)}
-.motion #giving .head .mark.in,.motion #stories .head .mark.in{transition:none;animation:bloom 1.05s cubic-bezier(.25,.8,.3,1) both}
-@keyframes bloom{
-  0%  {opacity:0;transform:scale(0) rotate(-120deg)}
-  55% {opacity:1;transform:scale(1.22) rotate(10deg)}
-  80% {transform:scale(.95) rotate(-3deg)}
-  100%{opacity:1;transform:none}
-}
+/* Section-head trinity icons (Make a Difference, Our Stories) bloom with scroll: they open (grow + twist a
+   third of a turn, slight overshoot) as they rise into view and fold back as they leave - reversible both ways.
+   motion.js sets --bs (scale), --br (rotation) and --bo (opacity) from the icon's position on screen. */
+.motion #giving .head .mark,.motion #stories .head .mark{transform:scale(var(--bs,1)) rotate(var(--br,0deg));opacity:var(--bo,1);transition:none}
 .motion #giving .head > .eyebrow[data-reveal],.motion #stories .head > .eyebrow[data-reveal]{transition-delay:.3s}
 .motion #giving .head > h2[data-reveal],.motion #stories .head > h2[data-reveal]{transition-delay:.4s}
