@@ -72,49 +72,53 @@
   /* ---------- 5. Story card arrow ---------- */
   $$('.story .tab').forEach(t => { t.innerHTML = t.textContent.replace('»', '<span class="arr">»</span>'); });
 
-  /* ---------- 6. Donor Voices strip: duplicate the quotes so the loop is seamless ---------- */
+  /* ---------- 6. Donor Voices spotlight: one quote centred in focus, neighbours recede ---------- */
   const quotes = $('.quotes');
   if (quotes){
-    const cards = [...quotes.children];
+    const cards = [...quotes.children], n = cards.length;
     const track = document.createElement('div'); track.className = 'track';
+    // three copies (before / real / after) so it can loop forever in both directions
+    const clone = c => { const d = c.cloneNode(true); d.setAttribute('aria-hidden', 'true'); d.tabIndex = -1; return d; };
+    cards.forEach(c => track.appendChild(clone(c)));
     cards.forEach(c => track.appendChild(c));
-    cards.forEach(c => { const d = c.cloneNode(true); d.setAttribute('aria-hidden', 'true'); track.appendChild(d); });
-    quotes.appendChild(track); quotes.classList.add('marquee');
+    cards.forEach(c => track.appendChild(clone(c)));
+    quotes.appendChild(track); quotes.classList.add('spotlight');
+    const items = [...track.children];
+    let i = n, paused = false, hover = false, timer = null;
 
-    /* Drift driven from JS (not CSS) so the buttons can step it smoothly. */
-    const speed = 30;                       // px per second of drift
-    let x = 0, last = performance.now(), paused = false, hover = false, glide = null;
-    const stepW = () => { const c = track.children; return c[1].offsetLeft - c[0].offsetLeft; };   // one quote + gap
-    const loopW = () => stepW() * cards.length;      // one full set of quotes, gaps included
-    const wrap = v => { const w = loopW(); return ((v % w) + w) % w; };
-    function frame(now){
-      const dt = Math.min(64, now - last); last = now;
-      if (glide){
-        const t = Math.min(1, (now - glide.t0) / 650), e = 1 - Math.pow(1 - t, 3);
-        x = glide.from + (glide.to - glide.from) * e;
-        if (t >= 1){ x = wrap(glide.to); glide = null; }
-      } else if (!paused && !hover){ x = wrap(x + speed * dt / 1000); }
+    function place(animate){
+      if (!animate) track.classList.add('no-anim');
+      const c = items[i];
+      const x = c.offsetLeft + c.offsetWidth / 2 - quotes.clientWidth / 2;
       track.style.transform = `translateX(${-x}px)`;
-      requestAnimationFrame(frame);
+      items.forEach((el, j) => el.classList.toggle('is-active', j === i));
+      if (!animate){ void track.offsetWidth; track.classList.remove('no-anim'); }
     }
-    requestAnimationFrame(frame);
+    function go(to){
+      i = to; place(true);
+      clearTimeout(go.t);
+      go.t = setTimeout(() => {                       // after the glide, hop back to the real set invisibly
+        const k = ((i - n) % n + n) % n + n;
+        if (k !== i){ i = k; place(false); }
+      }, 900);
+    }
+    const next = () => go(i + 1), prev = () => go(i - 1);
+    function auto(){ clearInterval(timer); timer = setInterval(() => { if (!paused && !hover) next(); }, 6000); }
+
+    items.forEach((el, j) => el.addEventListener('click', () => { if (j !== i){ go(j); auto(); } }));
     quotes.addEventListener('mouseenter', () => hover = true);
     quotes.addEventListener('mouseleave', () => hover = false);
     quotes.addEventListener('focusin', () => hover = true);
     quotes.addEventListener('focusout', () => hover = false);
+    addEventListener('resize', () => place(false));
+    if (document.fonts) document.fonts.ready.then(() => place(false));
+    place(false); auto();
 
     const ctl = $('.quote-controls');
     if (ctl){
       ctl.hidden = false;
-      const step = dir => {
-        const s = stepW(), base = glide ? glide.to : x;
-        // snap to the next / previous quote boundary
-        const target = dir > 0 ? (Math.floor(base / s + 0.001) + 1) * s : (Math.ceil(base / s - 0.001) - 1) * s;
-        let from = x; if (target < 0 && from < s){ from += loopW(); }  // wrap backwards past the start
-        glide = {from, to: target < 0 ? target + loopW() : target, t0: performance.now()};
-      };
-      $('#qPrev').addEventListener('click', () => step(-1));
-      $('#qNext').addEventListener('click', () => step(1));
+      $('#qPrev').addEventListener('click', () => { prev(); auto(); });
+      $('#qNext').addEventListener('click', () => { next(); auto(); });
       const pp = $('#qPause');
       pp.addEventListener('click', () => {
         paused = !paused;

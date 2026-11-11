@@ -83,6 +83,7 @@ p{margin:0}
 .ctl-pp[aria-pressed="true"] .i-pause{display:none}
 .ctl-pp[aria-pressed="true"] .i-play{display:block}
 .quote-controls{display:flex;justify-content:center;gap:14px;margin-top:40px}
+[hidden]{display:none!important}
 .dots button{width:17px;height:17px;border-radius:50%;border:1px solid var(--white);background:transparent;padding:0}
 .dots button[aria-current="true"]{background:var(--white)}
 
@@ -157,9 +158,16 @@ p{margin:0}
 .voices .eyebrow{color:var(--white);margin-top:44px}
 .voices h2{font-size:56px;line-height:1.1;margin-top:2px}
 .quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:46px;margin-top:53px}
-.quote{background:var(--white);border-radius:27px;min-height:355px;padding:51px 42px 44px;justify-content:space-between;text-align:center;display:flex;flex-direction:column;gap:29px;margin:0}
-.quote blockquote{margin:0;font-weight:500;font-size:32px;line-height:1.25;color:var(--navy)}
-.quote figcaption{font-weight:700;font-size:18px;line-height:1.25;color:var(--teal)}
+/* Donor quotes: serif italic, pink quote mark, pink pinline, leaf-shaped portrait */
+.quote{position:relative;background:var(--white);border-radius:27px;padding:44px 48px 46px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px;margin:0}
+.quote::after{content:"";position:absolute;inset:12px;border:1.5px solid var(--magenta);border-radius:18px;pointer-events:none;opacity:.55}
+.q-photo{width:92px;height:92px;border-radius:58px 0 58px 0;overflow:hidden;flex:none;box-shadow:0 0 0 4px var(--white),0 0 0 5.5px rgba(189,33,150,.35)}
+.q-photo img{width:100%;height:100%;object-fit:cover}
+.quote blockquote{margin:0;position:relative;font-family:var(--display);font-style:italic;font-weight:500;font-size:31px;line-height:1.22;color:var(--navy);text-wrap:balance}
+.quote::before{content:"\201C";position:absolute;left:34px;top:4px;font-family:var(--display);font-size:150px;line-height:1;color:var(--magenta);pointer-events:none}
+.quote figcaption{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.25}
+.q-name{font-weight:700;font-size:17px;color:var(--teal)}
+.q-role{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--magenta)}
 
 /* ---------- Stay Connected (346 tall · form at x1085) ---------- */
 .connect{background:var(--royal);color:var(--white);height:346px;padding:91px 189px 0 185px;display:flex;justify-content:space-between}
@@ -297,7 +305,7 @@ dialog .btn{justify-self:start}
   .voices h2{font-size:clamp(34px,5.5vw,48px);text-wrap:balance}
   .quotes{grid-template-columns:1fr;gap:20px;max-width:640px;margin-inline:auto;margin-top:36px}
   .quote{height:auto;padding:40px 32px}
-  .quote blockquote{height:auto;font-size:24px}
+  .quote blockquote{font-size:24px}
 
   .connect{height:auto;padding:56px 20px 64px;flex-direction:column;gap:28px}
   .connect h2{width:auto;font-size:clamp(32px,5vw,44px)}
@@ -479,9 +487,9 @@ dialog .btn{justify-self:start}
         <h2>The most human thing you can do is give.</h2>
       </div>
       <div class="quotes">
-        <figure class="quote"><blockquote>“I didn’t expect to feel this supported. The team treated my family like we mattered, and that made the hardest year a little easier.”</blockquote><figcaption>Jack Placeholder, donor</figcaption></figure>
-        <figure class="quote"><blockquote>“Giving back felt small until I saw what it actually funds. Knowing my gift helped someone get through treatment means everything to me.”</blockquote><figcaption>Jill Placeholder, donor</figcaption></figure>
-        <figure class="quote"><blockquote>“We started a fundraiser at our office, and it turned into something bigger than any of us planned. Every dollar went straight to care.”</blockquote><figcaption>Jo Placeholder, donor</figcaption></figure>
+        <figure class="quote"><div class="q-photo"><img src="assets/05722.jpg" alt="" style="object-position:50% 22%" loading="lazy"></div><blockquote>“I didn’t expect to feel this supported. The team treated my family like we mattered, and that made the hardest year a little easier.”</blockquote><figcaption><span class="q-name">Jack Placeholder</span><span class="q-role">Donor</span></figcaption></figure>
+        <figure class="quote"><div class="q-photo"><img src="assets/5eb24.jpg" alt="" style="object-position:50% 20%" loading="lazy"></div><blockquote>“Giving back felt small until I saw what it actually funds. Knowing my gift helped someone get through treatment means everything to me.”</blockquote><figcaption><span class="q-name">Jill Placeholder</span><span class="q-role">Donor</span></figcaption></figure>
+        <figure class="quote"><div class="q-photo"><img src="assets/bd13e.jpg" alt="" style="object-position:30% 30%" loading="lazy"></div><blockquote>“We started a fundraiser at our office, and it turned into something bigger than any of us planned. Every dollar went straight to care.”</blockquote><figcaption><span class="q-name">Jo Placeholder</span><span class="q-role">Donor</span></figcaption></figure>
       </div>
       <div class="quote-controls" hidden><button class="ctl" id="qPrev" aria-label="Previous quote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button><button class="ctl ctl-pp" id="qPause" aria-label="Pause quotes" aria-pressed="false"><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5v11M15 6.5v11"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.2v11.6L18 12z"/></svg></button><button class="ctl" id="qNext" aria-label="Next quote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button></div>
     </div>
