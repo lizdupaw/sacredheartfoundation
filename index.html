@@ -91,6 +91,17 @@ p{margin:0}
 .dots button[aria-current="true"]::after{animation:segfill var(--seg-dur,7s) linear both}
 .ctl-bar.is-paused .dots button[aria-current="true"]::after{animation-play-state:paused}
 @keyframes segfill{from{width:0}to{width:1px}}
+/* Slider controls, simplified: just the Figma dots — outlined circles, current one filled. No pill, arrows or pause. */
+.ctl-bar{background:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important}
+.ctl-bar .ctl{display:none!important}
+.ctl-bar .dots{gap:10px;padding:0}
+.ctl-bar .dots button{width:17px;height:17px}
+.ctl-bar .dots button::before{inset:0;width:auto;height:auto;margin:0;border:1px solid var(--white);background:transparent;transform:none}
+.ctl-bar .dots button:hover::before{background:rgba(255,255,255,.35)}
+.ctl-bar .dots button[aria-current="true"]::before{background:var(--white);transform:none}
+.hero-controls.ctl-bar{top:731px}
+.quote-controls.ctl-bar{margin-top:40px}
+@media (max-width:1199px){.hero-controls.ctl-bar{top:auto;bottom:40px}}
 .ctl-pp .i-play{display:none}
 .ctl-pp[aria-pressed="true"] .i-pause{display:none}
 .ctl-pp[aria-pressed="true"] .i-play{display:block}
