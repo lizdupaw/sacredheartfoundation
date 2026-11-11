@@ -146,7 +146,16 @@
   /* ---------- 2 + 3. Scroll-linked motion (petal, flower drift, kid parallax, Share Your Story) ---------- */
   const share = $('.share'), about = $('.about'), petal = $('.share h2 .petal'), kid = $('.about .kid');
   const leaf = $('.leaf-photo'), shareCopy = $('.share .copy');
+  const stats = $('.stats'), underlines = $$('.u');
   function onScroll(){
+    // trust bar icons: draw in once the bar is on screen
+    if (stats && !stats.classList.contains('icons-in') && stats.getBoundingClientRect().top < vh(stats) * 0.85) stats.classList.add('icons-in');
+    // headline underlines: draw as the word travels from 88% to 55% of the screen height
+    underlines.forEach(u => {
+      const r = u.getBoundingClientRect(), h = vh(u);
+      const t = Math.min(1, Math.max(0, (h * 0.88 - r.top) / (h * 0.33)));
+      u.style.setProperty('--u', (1 - ease(t)).toFixed(3));
+    });
     if (share){
       const p = progress(share);
       const open = ease(Math.min(1, p / 0.45));           // fully open by the time the section is ~centered
