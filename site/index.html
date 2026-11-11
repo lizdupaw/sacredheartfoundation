@@ -409,6 +409,19 @@ dialog .btn{justify-self:start}
   .foot .tag .acts{gap:24px}
   .legal{padding-bottom:calc(58px + env(safe-area-inset-bottom,0px))}  /* clear the fixed PROTOTYPE badge */
 }
+
+/* Phone footer: everything centered - logo, copy, Contact Us with social icons beneath, link lists */
+@media (max-width:640px){
+  .foot{justify-items:center;text-align:center}
+  .foot .flogo{margin-inline:auto}
+  .foot .tag{display:flex;flex-direction:column;align-items:center}
+  .foot .tag p{max-width:320px;margin-inline:auto}
+  .foot .tag .acts{flex-direction:column;align-items:center;gap:22px}
+  .foot .cols{justify-items:center;width:100%}
+  .foot .cols nav{display:flex;flex-direction:column;align-items:center}
+  .foot h4::before{left:50%;transform:translateX(-50%)}
+  .foot ul{align-items:center}
+}
 </style>
 <link rel="stylesheet" href="motion.css">
 <script>
