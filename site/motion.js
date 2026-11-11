@@ -147,14 +147,8 @@
   const share = $('.share'), about = $('.about'), petal = $('.share h2 .petal'), kid = $('.about .kid');
   const leaf = $('.leaf-photo'), shareCopy = $('.share .copy');
   const stats = $('.stats'), underlines = $$('.u');
-  // each underline gets a second copy of its line: a glint that sweeps along it once it's fully drawn
-  underlines.forEach((u, k) => {
-    const base = u.querySelector('.u-line path');
-    if (!base) return;
-    const glint = base.cloneNode(); glint.setAttribute('class', 'u-glint');
-    base.parentNode.appendChild(glint);
-    u.style.setProperty('--glint-delay', (k * 0.9).toFixed(1) + 's');   // stagger so they don't all flash together
-  });
+  // stagger the underline loops so they don't all redraw at once
+  underlines.forEach((u, k) => u.style.setProperty('--glint-delay', (k * 0.9).toFixed(1) + 's'));
   function onScroll(){
     // trust bar icons: draw in once the bar is on screen
     if (stats && !stats.classList.contains('icons-in') && stats.getBoundingClientRect().top < vh(stats) * 0.85) stats.classList.add('icons-in');
