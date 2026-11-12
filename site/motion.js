@@ -250,7 +250,7 @@
     if (about){
       const p = progress(about);
       flower && flower.style.setProperty('--flower-spin', (p * 24 - 12).toFixed(2) + 'deg');
-      kid && kid.style.setProperty('--kid-shift', ((0.5 - p) * 60).toFixed(1) + 'px');
+      kid && kid.style.setProperty('--kid-shift', Math.max(0, (0.5 - p) * 60).toFixed(1) + 'px');   // only ever sinks (clipped by the section), never lifts off the bottom edge
     }
   }
   /* Reveal check on scroll too, so nothing stays hidden if the observer is slow or paused */
