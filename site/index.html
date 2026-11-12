@@ -733,7 +733,10 @@ dialog .btn{justify-self:start}
     {tag:'Oncology',t:'Early detection. Early intervention. More years '+U('together')+'.',b:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',img:'02070.jpg',pos:'30% 35%',alt:'A caregiver sharing a laugh with an older woman'}
   ];
   const sEls=$$('.slide'), dots=$$('.dots button'), copy=$('#heroCopy'); let idx=0, timer;
-  function go(i){ if(i===idx)return; idx=i;
+  function go(i){ if(i===idx)return;
+    // hold the outgoing photo at its current zoom so it doesn't snap back to 1x while the next one fades in
+    const out=sEls[idx].querySelector('img'); out.style.transform=getComputedStyle(out).transform;
+    idx=i;
     sEls.forEach((s,j)=>s.classList.toggle('on',j===i)); dots.forEach((d,j)=>d.setAttribute('aria-current',j===i));
     copy.classList.add('fading'); setTimeout(()=>{$('#heroTag').textContent=slides[i].tag;$('#heroTitle').innerHTML=slides[i].t;$('#heroBody').textContent=slides[i].b;copy.classList.remove('fading');},reduce?0:450);
   }

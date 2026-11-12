@@ -43,7 +43,7 @@
       .observe(title, {childList:true, characterData:true, subtree:true});
   }
 
-  /* ---------- 1b. Hero slide change: new photo opens out of a leaf-shaped window over the old one ---------- */
+  /* ---------- 1b. Hero slide change: new photo fades in over the old one (kept opaque underneath) ---------- */
   const hero = $('.hero'), slideEls = $$('.hero .slide');
   if (hero && slideEls.length){
     let current = slideEls.find(sl => sl.classList.contains('on'));
