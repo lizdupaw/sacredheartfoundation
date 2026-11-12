@@ -23,7 +23,7 @@
 .motion .about .flower-svg.drawn path{transition:stroke-dashoffset 2.4s cubic-bezier(.6,.1,.2,1)}
 .about .kid{transform:translateY(var(--kid-shift, 0px));transition:transform .2s linear}
 @media (min-width:1200px){.about .flower-svg{left:calc(var(--gx, 0px) + 891px)}}
-@media (max-width:1199px){.about .flower-svg{left:22%;top:-10%;width:60%;height:auto}}
+@media (max-width:1199px){.about .flower-svg{left:22%;top:4%;width:60%;height:auto}.about .art{margin-top:48px}}  /* flower sits clear of the Learn More button */
 
 /* 3. Share Your Story opens up: leaf photo grows from a petal, headline slides in */
 .leaf-photo{transform:scale(var(--leaf-scale, 1)) rotate(var(--leaf-rot, 0deg));transform-origin:30% 70%;transition:transform .15s linear}
