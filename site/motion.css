@@ -166,3 +166,10 @@
 .motion #giving .head .mark,.motion #stories .head .mark{transform:scale(var(--bs,1)) rotate(var(--br,0deg));opacity:var(--bo,1);transition:none}
 .motion #giving .head > .eyebrow[data-reveal],.motion #stories .head > .eyebrow[data-reveal]{transition-delay:.3s}
 .motion #giving .head > h2[data-reveal],.motion #stories .head > h2[data-reveal]{transition-delay:.4s}
+
+/* Hero layering: photos at the bottom (outgoing 0, incoming 1), then the shade and top gradient (2),
+   then the copy (3) and dots (4). Before, the showing photo sat above the shade, so the shade only
+   appeared on the outgoing photo mid-change, which read as a sudden darkening. */
+.hero-shade,.hero::after{z-index:2}
+.hero .hero-copy{z-index:3}
+.hero .hero-controls{z-index:4}
